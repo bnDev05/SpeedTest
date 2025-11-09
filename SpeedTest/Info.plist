@@ -45,5 +45,17 @@
 		<key>apiKey</key>
 		<string>deee042bcc537662459bd0e35a24355a</string>
 	</dict>
+    
+    <!-- For WiFi SSID detection -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to find the closest speed test server</string>
+
+    <!-- For cellular network info -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need your location to find the closest speed test server</string>
+
+    <!-- For WiFi info -->
+    <key>com.apple.developer.networking.wifi-info</key>
+    <true/>
 </dict>
 </plist>

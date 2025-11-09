@@ -77,7 +77,8 @@ struct ChangeServerView: View {
     
     private var selectAutomaticallyButton: some View {
         Button {
-            // here we should setup the logic of select automatically
+            viewModel.selectAutomatically()
+            dismiss()
         } label: {
             HStack {
                 Image(.selectAutomaticallyIcon)

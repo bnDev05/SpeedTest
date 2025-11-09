@@ -24,6 +24,7 @@ struct TestView: View {
             sourceAndProvidersView
         }
         .padding(.horizontal)
+        .padding(.bottom, 15)
     }
     
     private var title: some View {
