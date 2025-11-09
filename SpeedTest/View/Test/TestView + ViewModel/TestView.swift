@@ -92,7 +92,7 @@ struct TestView: View {
                     
                     if isProvider {
                         Button {
-                            
+                            NavigationManager.shared.present(ChangeServerView(), isFullScreenCover: false, isCrossDissolve: false)
                         } label: {
                             Text("Change testing server".localized)
                                 .font(.poppins(.medium, size: 16))

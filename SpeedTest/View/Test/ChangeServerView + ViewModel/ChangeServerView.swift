@@ -1,9 +1,3 @@
-//
-//  ChangeServerView.swift
-//  SpeedTest
-//
-//  Created by Behruz Norov on 09/11/25.
-//
 
 import SwiftUI
 
@@ -39,20 +33,26 @@ struct ChangeServerView: View {
     }
     
     private var topView: some View {
-        HStack {
-            Text("Change server".localized)
-                .font(.poppins(.bold, size: 28))
-                .foregroundStyle(Color.white)
-            Spacer()
-            Button {
-                dismiss()
-            } label: {
-                Image(.glassLiquidXButton)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 36, height: 36, alignment: .center)
+        VStack(spacing: 30) {
+            Capsule()
+                .frame(width: 50, height: 6, alignment: .center)
+                .padding(.top, 5)
+                .foregroundStyle(.gray)
+            HStack {
+                Text("Change server".localized)
+                    .font(.poppins(.bold, size: 28))
+                    .foregroundStyle(Color.white)
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(.glassLiquidXButton)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36, alignment: .center)
+                }
+                
             }
-
         }
     }
     
