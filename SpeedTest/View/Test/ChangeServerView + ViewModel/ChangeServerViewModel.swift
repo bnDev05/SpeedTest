@@ -9,11 +9,11 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     @Published var filteredServers: [ServerModel] = []
     @Published var selectedServer: ServerModel = ServerModel(
         id: UUID(),
-        name: "Default Server",
-        host: "speed.cloudflare.com",
-        provider: "Cloudflare",
-        city: "Global",
-        country: "Worldwide",
+        name: "Loading...",
+        host: "speedtest.net",
+        provider: "Loading...",
+        city: "...",
+        country: "...",
         countryCode: "WW",
         latitude: 0,
         longitude: 0,
@@ -37,152 +37,82 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     override init() {
         super.init()
         
-        // Get current selected server
-        self.selectedServer = serverManager.selectedServer ?? ServerModel(
-            id: UUID(),
-            name: "Default Server",
-            host: "speed.cloudflare.com",
-            provider: "Cloudflare",
-            city: "Global",
-            country: "Worldwide",
-            countryCode: "WW",
-            latitude: 0,
-            longitude: 0,
-            distanceKm: 0,
-            pingMs: nil,
-            isDefault: true,
-            lastChecked: nil,
-            status: .active,
-            supportedProtocols: ["HTTPS"],
-            bandwidthLimits: nil
-        )
+        // Update selected server from server manager if available
+        if let currentServer = serverManager.selectedServer {
+            self.selectedServer = currentServer
+        }
         
         setupBindings()
         setupLocationManager()
-        loadServers()
+        loadServersIfNeeded()
     }
     
     // MARK: - Setup
     private func setupBindings() {
         // Bind servers from server manager
         serverManager.$servers
-            .assign(to: &$servers)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] servers in
+                self?.servers = servers
+                self?.updateFilteredServers()
+            }
+            .store(in: &cancellables)
         
         // Filter servers based on search text
         $searchText
-            .combineLatest($servers)
-            .map { searchText, servers in
-                self.filterServers(query: searchText, servers: servers)
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateFilteredServers()
             }
-            .assign(to: &$filteredServers)
+            .store(in: &cancellables)
         
         // Update loading state
         serverManager.$isLoading
             .assign(to: &$isLoading)
+        
+        // Update selected server when it changes
+        serverManager.$selectedServer
+            .compactMap { $0 }
+            .assign(to: &$selectedServer)
     }
     
     private func setupLocationManager() {
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.delegate = self
         
-        // Request location for distance calculation
-        if locationManager.authorizationStatus == .authorizedWhenInUse ||
-           locationManager.authorizationStatus == .authorizedAlways {
-            locationManager.startUpdatingLocation()
+        // Request location if authorized
+        let status = locationManager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager.requestLocation()
         }
     }
     
     // MARK: - Server Management
-    private func loadServers() {
-        Task {
-            await serverManager.fetchServers()
-            
-            // If no servers loaded, use defaults
-            if servers.isEmpty {
-                await MainActor.run {
-                    servers = getDefaultServers()
-                }
+    private func loadServersIfNeeded() {
+        // Only fetch if we don't have servers yet
+        if serverManager.servers.isEmpty {
+            Task {
+                await serverManager.fetchServers(userLocation: userLocation)
             }
-            
-            // Calculate distances if location available
-            if let location = userLocation {
-                updateServerDistances(location: location)
-            }
+        } else {
+            // Use existing servers
+            servers = serverManager.servers
+            updateFilteredServers()
         }
     }
     
-    private func getDefaultServers() -> [ServerModel] {
-        return [
-            ServerModel(
-                id: UUID(),
-                name: "Cloudflare",
-                host: "speed.cloudflare.com",
-                provider: "Cloudflare Inc.",
-                city: "Global",
-                country: "Worldwide",
-                countryCode: "WW",
-                latitude: 0,
-                longitude: 0,
-                distanceKm: 0,
-                pingMs: nil,
-                isDefault: true,
-                lastChecked: Date(),
-                status: .active,
-                supportedProtocols: ["HTTPS"],
-                bandwidthLimits: nil
-            ),
-            ServerModel(
-                id: UUID(),
-                name: "Fast.com",
-                host: "fast.com",
-                provider: "Netflix",
-                city: "Global",
-                country: "Worldwide",
-                countryCode: "WW",
-                latitude: 0,
-                longitude: 0,
-                distanceKm: 0,
-                pingMs: nil,
-                isDefault: false,
-                lastChecked: Date(),
-                status: .active,
-                supportedProtocols: ["HTTPS"],
-                bandwidthLimits: nil
-            ),
-            ServerModel(
-                id: UUID(),
-                name: "Speedtest",
-                host: "speedtest.net",
-                provider: "Ookla",
-                city: "Global",
-                country: "Worldwide",
-                countryCode: "WW",
-                latitude: 0,
-                longitude: 0,
-                distanceKm: 0,
-                pingMs: nil,
-                isDefault: false,
-                lastChecked: Date(),
-                status: .active,
-                supportedProtocols: ["HTTPS"],
-                bandwidthLimits: nil
-            )
-        ]
-    }
-    
-    private func filterServers(query: String, servers: [ServerModel]) -> [ServerModel] {
-        guard !query.isEmpty else {
-            return servers.sorted { $0.distanceKm < $1.distanceKm }
+    private func updateFilteredServers() {
+        if searchText.isEmpty {
+            filteredServers = servers.sorted { $0.distanceKm < $1.distanceKm }
+        } else {
+            let filtered = servers.filter { server in
+                server.name.localizedCaseInsensitiveContains(searchText) ||
+                server.city.localizedCaseInsensitiveContains(searchText) ||
+                server.country.localizedCaseInsensitiveContains(searchText) ||
+                server.provider.localizedCaseInsensitiveContains(searchText)
+            }
+            filteredServers = filtered.sorted { $0.distanceKm < $1.distanceKm }
         }
-        
-        let filtered = servers.filter { server in
-            server.name.localizedCaseInsensitiveContains(query) ||
-            server.city.localizedCaseInsensitiveContains(query) ||
-            server.country.localizedCaseInsensitiveContains(query) ||
-            server.provider.localizedCaseInsensitiveContains(query)
-        }
-        
-        return filtered.sorted { $0.distanceKm < $1.distanceKm }
     }
     
     // MARK: - Server Selection
@@ -192,62 +122,23 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     }
     
     func selectAutomatically() {
-        guard let location = userLocation else {
-            // If no location, select first available server
-            if let firstServer = servers.first {
-                selectServer(firstServer)
-            }
-            return
-        }
-        
-        // Find closest server
-        let sortedByDistance = servers.sorted { $0.distanceKm < $1.distanceKm }
-        if let closestServer = sortedByDistance.first {
+        // Select the closest server (first in sorted list)
+        if let closestServer = filteredServers.first {
             selectServer(closestServer)
+        } else if let firstServer = servers.first {
+            selectServer(firstServer)
         }
     }
     
     // MARK: - Distance Calculation
     private func updateServerDistances(location: CLLocation) {
-        let userCoordinate = (
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude
-        )
-        
-        servers = servers.map { server in
-            var updatedServer = server
-            let serverLocation = CLLocation(
-                latitude: server.latitude,
-                longitude: server.longitude
-            )
-            let distance = location.distance(from: serverLocation) / 1000 // Convert to km
-            updatedServer = ServerModel(
-                id: server.id,
-                name: server.name,
-                host: server.host,
-                provider: server.provider,
-                city: server.city,
-                country: server.country,
-                countryCode: server.countryCode,
-                latitude: server.latitude,
-                longitude: server.longitude,
-                distanceKm: distance,
-                pingMs: server.pingMs,
-                isDefault: server.isDefault,
-                lastChecked: server.lastChecked,
-                status: server.status,
-                supportedProtocols: server.supportedProtocols,
-                bandwidthLimits: server.bandwidthLimits
-            )
-            return updatedServer
-        }
+        serverManager.updateServerDistances(userLocation: location)
     }
     
     // MARK: - Ping Test
     func testServerPing(_ server: ServerModel) async -> Int? {
         let speedTestManager = SpeedTestManager.shared
         
-        // Perform a quick ping test
         if let pingTime = await speedTestManager.measurePing(host: server.host) {
             return Int(pingTime)
         }
@@ -255,10 +146,10 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         return nil
     }
     
-    // MARK: - Helper Methods
+    // MARK: - Refresh
     func refreshServers() {
         Task {
-            await loadServers()
+            await serverManager.fetchServers(userLocation: userLocation)
         }
     }
 }
@@ -270,14 +161,19 @@ extension ChangeServerViewModel: CLLocationManagerDelegate {
         
         userLocation = location
         updateServerDistances(location: location)
-        
-        // Stop updating after getting location
-        locationManager.stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse || status == .authorizedAlways {
-            locationManager.startUpdatingLocation()
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+        case .denied, .restricted:
+            // Continue without location
+            break
+        case .notDetermined:
+            break
+        @unknown default:
+            break
         }
     }
     

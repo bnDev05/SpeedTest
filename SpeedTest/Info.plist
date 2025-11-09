@@ -57,5 +57,11 @@
     <!-- For WiFi info -->
     <key>com.apple.developer.networking.wifi-info</key>
     <true/>
+    
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

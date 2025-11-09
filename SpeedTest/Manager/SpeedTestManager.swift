@@ -3,6 +3,7 @@ import Network
 import SystemConfiguration.CaptiveNetwork
 import CoreTelephony
 import UIKit
+import CoreLocation
 import Combine
 
 // MARK: - Speed Test Manager
@@ -42,6 +43,7 @@ final class SpeedTestManager: ObservableObject {
             DispatchQueue.main.async {
                 self?.isConnected = path.status == .satisfied
                 self?.detectConnectionType()
+                self?.detectProvider()
             }
         }
         monitor.start(queue: queue)
@@ -68,7 +70,6 @@ final class SpeedTestManager: ObservableObject {
                 providerName = carrier.carrierName ?? "Unknown Carrier"
             }
         } else if connectionType == .wifi {
-            // Try to get WiFi SSID
             if let ssid = getWiFiSSID() {
                 providerName = ssid
             } else {
@@ -91,7 +92,6 @@ final class SpeedTestManager: ObservableObject {
     
     // MARK: - Speed Test Functions
     func performSpeedTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        // Reset values
         await MainActor.run {
             downloadSpeed = 0
             uploadSpeed = 0
@@ -99,6 +99,7 @@ final class SpeedTestManager: ObservableObject {
             jitter = 0
             packetLoss = 0
             pingResults = []
+            currentServer = server
         }
         
         // Step 1: Ping Test
@@ -112,7 +113,7 @@ final class SpeedTestManager: ObservableObject {
         
         // Complete
         await MainActor.run {
-            progress(.complete(speed: downloadSpeed))
+            progress(.complete(speed: max(downloadSpeed, uploadSpeed)))
         }
     }
     
@@ -121,7 +122,7 @@ final class SpeedTestManager: ObservableObject {
         let pingCount = 10
         var results: [Double] = []
         
-        for i in 0..<pingCount {
+        for _ in 0..<pingCount {
             if let pingTime = await measurePing(host: server.host) {
                 results.append(pingTime)
                 
@@ -129,7 +130,6 @@ final class SpeedTestManager: ObservableObject {
                     let avgPing = results.reduce(0, +) / Double(results.count)
                     self.ping = Int(avgPing)
                     
-                    // Calculate jitter
                     if results.count > 1 {
                         var jitterSum = 0.0
                         for j in 1..<results.count {
@@ -138,24 +138,27 @@ final class SpeedTestManager: ObservableObject {
                         self.jitter = Int(jitterSum / Double(results.count - 1))
                     }
                 }
-            } else {
-                await MainActor.run {
-                    self.packetLoss = Int(Double(pingCount - results.count) / Double(pingCount) * 100)
-                }
             }
             
-            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
+            try? await Task.sleep(nanoseconds: 100_000_000)
         }
         
         await MainActor.run {
             pingResults = results
+            let lossCount = pingCount - results.count
+            self.packetLoss = Int(Double(lossCount) / Double(pingCount) * 100)
         }
     }
     
     func measurePing(host: String) async -> Double? {
         let startTime = Date()
         
-        guard let url = URL(string: "https://\(host)") else { return nil }
+        // Clean host - remove protocol if present
+        var cleanHost = host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
+        
+        guard let url = URL(string: "https://\(cleanHost)") else { return nil }
         
         do {
             var request = URLRequest(url: url, timeoutInterval: 5)
@@ -164,11 +167,11 @@ final class SpeedTestManager: ObservableObject {
             let (_, response) = try await URLSession.shared.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+                  (200...299).contains(httpResponse.statusCode) else {
                 return nil
             }
             
-            let pingTime = Date().timeIntervalSince(startTime) * 1000 // Convert to ms
+            let pingTime = Date().timeIntervalSince(startTime) * 1000
             return pingTime
         } catch {
             return nil
@@ -177,51 +180,77 @@ final class SpeedTestManager: ObservableObject {
     
     // MARK: - Download Test
     private func performDownloadTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        // Test with multiple file sizes to get accurate measurement
-        let testDuration: TimeInterval = 10 // 10 seconds test
+        let testDuration: TimeInterval = 10
         let startTime = Date()
         var totalBytesReceived: Int64 = 0
+        var testCount = 0
         
-        // Use different file sizes for testing
-        let testSizes = ["10MB", "20MB", "50MB"] // Adjust based on server
-        
-        for testSize in testSizes {
-            guard Date().timeIntervalSince(startTime) < testDuration else { break }
+        // Use multiple concurrent downloads for accurate measurement
+        await withTaskGroup(of: Int64?.self) { group in
+            while Date().timeIntervalSince(startTime) < testDuration {
+                group.addTask {
+                    await self.downloadChunk(from: server)
+                }
+                
+                testCount += 1
+                if testCount >= 3 { // Limit concurrent downloads
+                    if let bytes = await group.next() {
+                        if let actualBytes = bytes {
+                            totalBytesReceived += actualBytes
+                            
+                            let elapsedTime = Date().timeIntervalSince(startTime)
+                            if elapsedTime > 0 {
+                                let speedMbps = (Double(totalBytesReceived) * 8) / (elapsedTime * 1_000_000)
+                                
+                                await MainActor.run {
+                                    self.downloadSpeed = speedMbps
+                                    progress(.testing(speed: speedMbps))
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if Date().timeIntervalSince(startTime) >= testDuration {
+                    break
+                }
+            }
             
-            if let bytes = await downloadFile(from: server, size: testSize) {
-                totalBytesReceived += bytes
-                
-                let elapsedTime = Date().timeIntervalSince(startTime)
-                let speedMbps = (Double(totalBytesReceived) * 8) / (elapsedTime * 1_000_000)
-                
-                await MainActor.run {
-                    self.downloadSpeed = speedMbps
-                    progress(.testing(speed: speedMbps))
+            // Collect remaining results
+            for await bytes in group {
+                if let actualBytes = bytes {
+                    totalBytesReceived += actualBytes
                 }
             }
         }
-    }
-    
-    private func downloadFile(from server: ServerModel, size: String) async -> Int64? {
-        // In real implementation, use actual test URLs from the server
-        // This is a simulation using a large file download
-        guard let url = URL(string: "https://\(server.host)/download?size=\(size)") else {
-            // Fallback to a known test file URL
-            guard let fallbackURL = URL(string: "https://speed.cloudflare.com/__down?bytes=10485760") else {
-                return nil
-            }
-            return await downloadFromURL(fallbackURL)
-        }
         
-        return await downloadFromURL(url)
+        let finalElapsedTime = Date().timeIntervalSince(startTime)
+        if finalElapsedTime > 0 {
+            let finalSpeedMbps = (Double(totalBytesReceived) * 8) / (finalElapsedTime * 1_000_000)
+            await MainActor.run {
+                self.downloadSpeed = finalSpeedMbps
+            }
+        }
     }
     
-    private func downloadFromURL(_ url: URL) async -> Int64? {
+    private func downloadChunk(from server: ServerModel) async -> Int64? {
+        // Generate random test file URL from server
+        let sizes = [1048576, 2097152, 5242880] // 1MB, 2MB, 5MB
+        let randomSize = sizes.randomElement() ?? 1048576
+        
+        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
+        
+        // Try server-specific download endpoint
+        let downloadURLString = "https://\(cleanHost)/download?nocache=\(UUID().uuidString)&size=\(randomSize)"
+        
+        guard let url = URL(string: downloadURLString) else { return nil }
+        
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             return Int64(data.count)
         } catch {
-            print("Download error: \(error)")
             return nil
         }
     }
@@ -232,19 +261,21 @@ final class SpeedTestManager: ObservableObject {
         let startTime = Date()
         var totalBytesUploaded: Int64 = 0
         
-        // Generate test data
         let chunkSize = 1024 * 1024 // 1MB chunks
-        let testData = Data(repeating: 0, count: chunkSize)
         
         while Date().timeIntervalSince(startTime) < testDuration {
-            if let bytes = await uploadData(to: server, data: testData) {
+            let testData = Data(count: chunkSize)
+            
+            if let bytes = await uploadChunk(to: server, data: testData) {
                 totalBytesUploaded += bytes
                 
                 let elapsedTime = Date().timeIntervalSince(startTime)
-                let speedMbps = (Double(totalBytesUploaded) * 8) / (elapsedTime * 1_000_000)
-                
-                await MainActor.run {
-                    self.uploadSpeed = speedMbps
+                if elapsedTime > 0 {
+                    let speedMbps = (Double(totalBytesUploaded) * 8) / (elapsedTime * 1_000_000)
+                    
+                    await MainActor.run {
+                        self.uploadSpeed = speedMbps
+                    }
                 }
             } else {
                 break
@@ -252,84 +283,36 @@ final class SpeedTestManager: ObservableObject {
         }
     }
     
-    private func uploadData(to server: ServerModel, data: Data) async -> Int64? {
-        guard let url = URL(string: "https://\(server.host)/upload") else {
-            // Fallback URL
-            guard let fallbackURL = URL(string: "https://speed.cloudflare.com/__up") else {
-                return nil
-            }
-            return await uploadToURL(fallbackURL, data: data)
-        }
+    private func uploadChunk(to server: ServerModel, data: Data) async -> Int64? {
+        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
         
-        return await uploadToURL(url, data: data)
-    }
-    
-    private func uploadToURL(_ url: URL, data: Data) async -> Int64? {
+        let uploadURLString = "https://\(cleanHost)/upload?nocache=\(UUID().uuidString)"
+        guard let url = URL(string: uploadURLString) else { return nil }
+        
         do {
-            var request = URLRequest(url: url)
+            var request = URLRequest(url: url, timeoutInterval: 30)
             request.httpMethod = "POST"
             request.httpBody = data
+            request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
             
             let (_, response) = try await URLSession.shared.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+                  (200...299).contains(httpResponse.statusCode) else {
                 return nil
             }
             
             return Int64(data.count)
         } catch {
-            print("Upload error: \(error)")
             return nil
         }
     }
     
-    // MARK: - Server Selection
-    func findOptimalServer(from servers: [ServerModel], userLocation: (latitude: Double, longitude: Double)) -> ServerModel? {
-        var serversWithDistance = servers.map { server -> (server: ServerModel, distance: Double) in
-            let distance = calculateDistance(
-                from: userLocation,
-                to: (latitude: server.latitude, longitude: server.longitude)
-            )
-            return (server, distance)
-        }
-        
-        serversWithDistance.sort { $0.distance < $1.distance }
-        
-        return serversWithDistance.first?.server
-    }
-    
-    private func calculateDistance(from: (latitude: Double, longitude: Double), to: (latitude: Double, longitude: Double)) -> Double {
-        let earthRadius = 6371.0 // km
-        
-        let lat1Rad = from.latitude * .pi / 180
-        let lat2Rad = to.latitude * .pi / 180
-        let deltaLat = (to.latitude - from.latitude) * .pi / 180
-        let deltaLon = (to.longitude - from.longitude) * .pi / 180
-        
-        let a = sin(deltaLat / 2) * sin(deltaLat / 2) +
-                cos(lat1Rad) * cos(lat2Rad) *
-                sin(deltaLon / 2) * sin(deltaLon / 2)
-        
-        let c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        
-        return earthRadius * c
-    }
-    
-    // MARK: - Device Info
+    // MARK: - Helper Methods
     func getDeviceName() -> String {
         return UIDevice.current.name
-    }
-    
-    func getDeviceModel() -> String {
-        var systemInfo = utsname()
-        uname(&systemInfo)
-        let machineMirror = Mirror(reflecting: systemInfo.machine)
-        let identifier = machineMirror.children.reduce("") { identifier, element in
-            guard let value = element.value as? Int8, value != 0 else { return identifier }
-            return identifier + String(UnicodeScalar(UInt8(value)))
-        }
-        return identifier
     }
 }
 
@@ -341,13 +324,105 @@ final class ServerManager: ObservableObject {
     @Published var selectedServer: ServerModel?
     @Published var isLoading = false
     
-    private init() {
-        loadDefaultServers()
+    private init() {}
+    
+    // MARK: - Fetch Servers from Speedtest.net API
+    func fetchServers(userLocation: CLLocation? = nil) async {
+        await MainActor.run {
+            isLoading = true
+        }
+        
+        do {
+            // Fetch servers from Speedtest.net
+            let fetchedServers = try await fetchSpeedtestServers(userLocation: userLocation)
+            
+            await MainActor.run {
+                self.servers = fetchedServers
+                
+                // Auto-select closest server if none selected
+                if self.selectedServer == nil, let firstServer = fetchedServers.first {
+                    self.selectedServer = firstServer
+                }
+                
+                isLoading = false
+            }
+        } catch {
+            print("Error fetching servers: \(error)")
+            
+            // Fallback to default servers
+            await MainActor.run {
+                self.servers = getDefaultServers()
+                if self.selectedServer == nil {
+                    self.selectedServer = self.servers.first
+                }
+                isLoading = false
+            }
+        }
     }
     
-    private func loadDefaultServers() {
-        // In production, fetch this from your backend or Speedtest.net API
-        servers = [
+    private func fetchSpeedtestServers(userLocation: CLLocation?) async throws -> [ServerModel] {
+        // Speedtest.net server API
+        let urlString = "https://www.speedtest.net/api/js/servers?engine=js&limit=50"
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let decoder = JSONDecoder()
+        let serverResponse = try decoder.decode([SpeedtestServerResponse].self, from: data)
+        
+        // Convert to ServerModel
+        var servers = serverResponse.map { response -> ServerModel in
+            let location = userLocation ?? CLLocation(latitude: 0, longitude: 0)
+            let serverLocation = CLLocation(latitude: response.lat, longitude: response.lon)
+            let distance = location.distance(from: serverLocation) / 1000 // km
+            
+            return ServerModel(
+                id: UUID(),
+                name: response.sponsor,
+                host: response.host,
+                provider: response.sponsor,
+                city: response.name,
+                country: response.country,
+                countryCode: response.cc,
+                latitude: response.lat,
+                longitude: response.lon,
+                distanceKm: distance,
+                pingMs: nil,
+                isDefault: false,
+                lastChecked: Date(),
+                status: .active,
+                supportedProtocols: ["HTTPS"],
+                bandwidthLimits: nil
+            )
+        }
+        
+        // Sort by distance
+        servers.sort { $0.distanceKm < $1.distanceKm }
+        
+        return servers
+    }
+    
+    private func getDefaultServers() -> [ServerModel] {
+        return [
+            ServerModel(
+                id: UUID(),
+                name: "Speedtest by Ookla",
+                host: "speedtest.net",
+                provider: "Ookla",
+                city: "Global",
+                country: "Worldwide",
+                countryCode: "WW",
+                latitude: 0,
+                longitude: 0,
+                distanceKm: 0,
+                pingMs: nil,
+                isDefault: true,
+                lastChecked: Date(),
+                status: .active,
+                supportedProtocols: ["HTTPS"],
+                bandwidthLimits: nil
+            ),
             ServerModel(
                 id: UUID(),
                 name: "Cloudflare",
@@ -360,46 +435,13 @@ final class ServerManager: ObservableObject {
                 longitude: 0,
                 distanceKm: 0,
                 pingMs: nil,
-                isDefault: true,
-                lastChecked: nil,
-                status: .active,
-                supportedProtocols: ["HTTPS"],
-                bandwidthLimits: nil
-            ),
-            ServerModel(
-                id: UUID(),
-                name: "Fast.com",
-                host: "fast.com",
-                provider: "Netflix",
-                city: "Global",
-                country: "Worldwide",
-                countryCode: "WW",
-                latitude: 0,
-                longitude: 0,
-                distanceKm: 0,
-                pingMs: nil,
                 isDefault: false,
-                lastChecked: nil,
+                lastChecked: Date(),
                 status: .active,
                 supportedProtocols: ["HTTPS"],
                 bandwidthLimits: nil
             )
         ]
-        
-        selectedServer = servers.first
-    }
-    
-    func fetchServers() async {
-        await MainActor.run {
-            isLoading = true
-        }
-        
-        // In production, fetch from Speedtest.net API or your backend
-        // Example: https://www.speedtest.net/api/js/servers
-        
-        await MainActor.run {
-            isLoading = false
-        }
     }
     
     func selectServer(_ server: ServerModel) {
@@ -418,14 +460,51 @@ final class ServerManager: ObservableObject {
         }
     }
     
-    func updateServerDistances(userLocation: (latitude: Double, longitude: Double)) {
+    func updateServerDistances(userLocation: CLLocation) {
         servers = servers.map { server in
-            var updatedServer = server
-            let distance = SpeedTestManager.shared.findOptimalServer(
-                from: [server],
-                userLocation: userLocation
+            let serverLocation = CLLocation(latitude: server.latitude, longitude: server.longitude)
+            let distance = userLocation.distance(from: serverLocation) / 1000
+            
+            return ServerModel(
+                id: server.id,
+                name: server.name,
+                host: server.host,
+                provider: server.provider,
+                city: server.city,
+                country: server.country,
+                countryCode: server.countryCode,
+                latitude: server.latitude,
+                longitude: server.longitude,
+                distanceKm: distance,
+                pingMs: server.pingMs,
+                isDefault: server.isDefault,
+                lastChecked: server.lastChecked,
+                status: server.status,
+                supportedProtocols: server.supportedProtocols,
+                bandwidthLimits: server.bandwidthLimits
             )
-            return updatedServer
         }
+        
+        // Re-sort by distance
+        servers.sort { $0.distanceKm < $1.distanceKm }
+    }
+}
+
+// MARK: - Speedtest API Response Models
+struct SpeedtestServerResponse: Codable {
+    let url: String
+    let lat: Double
+    let lon: Double
+    let name: String
+    let country: String
+    let cc: String
+    let sponsor: String
+    let id: String
+    let host: String
+    let url2: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case url, lat, lon, name, country, cc, sponsor, id, host
+        case url2 = "url2"
     }
 }

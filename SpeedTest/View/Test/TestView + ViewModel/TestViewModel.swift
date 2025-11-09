@@ -16,7 +16,7 @@ final class TestViewModel: NSObject, ObservableObject {
     @Published var sourceName: String = "Unknown"
     @Published var phoneName: String = ""
     
-    @Published var serverName: String = "Selecting..."
+    @Published var serverName: String = "Loading..."
     @Published var serverLocationName: String = "..."
     
     // MARK: - Private Properties
@@ -24,6 +24,7 @@ final class TestViewModel: NSObject, ObservableObject {
     private let serverManager = ServerManager.shared
     private let locationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
+    private var currentLocation: CLLocation?
     
     // MARK: - Initialization
     override init() {
@@ -32,9 +33,8 @@ final class TestViewModel: NSObject, ObservableObject {
         setupLocationManager()
         updateConnectionInfo()
         updateDeviceInfo()
-        loadSelectedServer()
         
-        // Request location permission for optimal server selection
+        // Request location permission
         locationManager.requestWhenInUseAuthorization()
     }
     
@@ -73,7 +73,7 @@ final class TestViewModel: NSObject, ObservableObject {
     
     private func setupLocationManager() {
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        locationManager.delegate = nil
+        locationManager.delegate = self
     }
     
     // MARK: - Update Methods
@@ -90,7 +90,7 @@ final class TestViewModel: NSObject, ObservableObject {
     private func updateServerInfo(_ server: ServerModel?) {
         guard let server = server else {
             serverName = "No server selected"
-            serverLocationName = "Please select a server"
+            serverLocationName = "Tap to select"
             return
         }
         
@@ -98,12 +98,9 @@ final class TestViewModel: NSObject, ObservableObject {
         serverLocationName = "\(server.city), \(server.country)"
     }
     
-    private func loadSelectedServer() {
-        // Load previously selected server or find optimal one
-        if serverManager.selectedServer == nil {
-            Task {
-                await selectOptimalServer()
-            }
+    func loadServers() {
+        Task {
+            await serverManager.fetchServers(userLocation: currentLocation)
         }
     }
     
@@ -115,9 +112,15 @@ final class TestViewModel: NSObject, ObservableObject {
         }
         
         guard let server = serverManager.selectedServer else {
-            speedState = .error(message: "No server selected")
+            speedState = .error(message: "No server selected. Please select a server first.")
             return
         }
+        
+        // Reset values
+        speed = 0
+        pingAmount = 0
+        jitterAmount = 0
+        lossAmount = 0
         
         speedState = .connecting
         
@@ -128,57 +131,19 @@ final class TestViewModel: NSObject, ObservableObject {
     
     private func performSpeedTest(server: ServerModel) async {
         await speedTestManager.performSpeedTest(server: server) { [weak self] state in
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self?.speedState = state
                 
                 // Update speed value for UI
-                if case .testing(let currentSpeed) = state {
+                switch state {
+                case .testing(let currentSpeed):
                     self?.speed = currentSpeed
-                } else if case .complete(let finalSpeed) = state {
+                case .complete(let finalSpeed):
                     self?.speed = finalSpeed
+                default:
+                    break
                 }
             }
-        }
-    }
-    
-    // MARK: - Server Selection
-    private func selectOptimalServer() async {
-        // Try to get user location
-        if let location = locationManager.location {
-            let userLocation = (
-                latitude: location.coordinate.latitude,
-                longitude: location.coordinate.longitude
-            )
-            
-            if let optimalServer = speedTestManager.findOptimalServer(
-                from: serverManager.servers,
-                userLocation: userLocation
-            ) {
-                await MainActor.run {
-                    serverManager.selectServer(optimalServer)
-                }
-            }
-        } else {
-            // Use first available server if location not available
-            if let firstServer = serverManager.servers.first {
-                await MainActor.run {
-                    serverManager.selectServer(firstServer)
-                }
-            }
-        }
-    }
-    
-    // MARK: - Unit Conversion
-    func convertSpeed(from mbps: Double, to unit: String) -> String {
-        switch unit {
-        case "Mbps":
-            return String(format: "%.2f", mbps)
-        case "Kbps":
-            return String(format: "%.0f", mbps * 1000)
-        case "MB/s":
-            return String(format: "%.2f", mbps / 8)
-        default:
-            return String(format: "%.2f", mbps)
         }
     }
     
@@ -196,23 +161,44 @@ final class TestViewModel: NSObject, ObservableObject {
     }
 }
 
-// MARK: - CLLocationManagerDelegate (if needed)
+// MARK: - CLLocationManagerDelegate
 extension TestViewModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         
-        let userLocation = (
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude
-        )
+        currentLocation = location
         
-        // Update server distances
-        serverManager.updateServerDistances(userLocation: userLocation)
+        // Fetch servers with user location
+        Task {
+            await serverManager.fetchServers(userLocation: location)
+        }
+        
+        // Stop updating to save battery
+        locationManager.stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse || status == .authorizedAlways {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
+        case .denied, .restricted:
+            // Fetch servers without location
+            Task {
+                await serverManager.fetchServers(userLocation: nil)
+            }
+        case .notDetermined:
+            break
+        @unknown default:
+            break
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location error: \(error.localizedDescription)")
+        
+        // Fetch servers without location as fallback
+        Task {
+            await serverManager.fetchServers(userLocation: nil)
         }
     }
 }
