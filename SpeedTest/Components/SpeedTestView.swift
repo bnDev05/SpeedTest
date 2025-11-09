@@ -23,7 +23,7 @@ struct SpeedTestView: View {
                 Spacer()
                 
                 // Main speedometer
-                SpeedometerView(state: currentState, speed: $speed, onStart: {
+                SpeedometerView(state: $currentState, speed: $speed, onStart: {
                     startTest()
                 })
                     .frame(width: 350, height: 350)
@@ -89,7 +89,7 @@ struct SpeedTestView: View {
 
 // MARK: - Speedometer View
 struct SpeedometerView: View {
-    let state: SpeedTestState
+    @Binding var state: SpeedTestState
     @Binding var speed: Double
     @State var isConnected: Bool = true
     @State var onStart: (() -> Void)

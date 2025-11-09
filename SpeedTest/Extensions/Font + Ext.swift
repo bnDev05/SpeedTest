@@ -20,3 +20,21 @@ extension Font {
         return Font.custom(weight.rawValue, size: size)
     }
 }
+
+enum OnestWeight: String {
+    case regular  = "Onest-Regular"
+    case medium   = "Onest-Medium"
+    case semibold = "Onest-SemiBold"
+    case bold     = "Onest-Bold"
+    case light    = "Onest-Light"
+    case extrabold = "Onest-ExtraBold"
+    case thin     = "Onest-Thin"
+    case black    = "Onest-Black"
+}
+
+
+extension Font {
+    static func onest(_ weight: OnestWeight, size: CGFloat) -> Font {
+        return Font.custom(weight.rawValue, size: size)
+    }
+}
