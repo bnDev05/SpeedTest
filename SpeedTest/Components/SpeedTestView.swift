@@ -193,9 +193,10 @@ struct SpeedometerView: View {
                             .monospacedDigit()
                         
                         HStack(spacing: 6) {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(.purple)
+                            Image(.pinkUploadIcon) // there when the speed is increasing, we should set that image, if decreasing we should set .greenDownloadIcon
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28, height: 28, alignment: .center)
                             Text("Mbit/s")
                                 .font(.poppins(.medium, size: 18))
                                 .foregroundColor(Color(hex: "#787F88"))

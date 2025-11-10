@@ -16,7 +16,7 @@ struct UploadDownloadView: View {
     
     // Store historical speed data for the chart
     @State var speedHistory: [SpeedDataPoint] = []
-    @State private var maxDataPoints = 30
+    @State private var maxDataPoints = 20
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -75,7 +75,7 @@ struct UploadDownloadView: View {
                 }
                 .chartXAxis(.hidden)
                 .chartYAxis(.hidden)
-                .chartXScale(domain: 0...maxDataPoints)
+                .chartXScale(domain: 0...max(maxDataPoints, speedHistory.count))
                 .chartYScale(domain: 0...(speedHistory.map { $0.speed }.max() ?? 100) * 1.1)
                 .frame(height: 41)
                 .padding(.bottom, 8)
@@ -95,6 +95,7 @@ struct UploadDownloadView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .onChange(of: speed) { newSpeed in
+            // Only update history if we're not given a pre-populated history
             if !isHistoryGiven {
                 updateSpeedHistory(newSpeed)
             }

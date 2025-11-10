@@ -40,6 +40,9 @@ struct ResultView: View {
             watchVideosRating = testResults.watchVideosRating
             playGamesRating = testResults.playGamesRating
             uploadPhotosRating = testResults.uploadPhotosRating
+            
+            print("📊 Download history count: \(testResults.downloadHistory.count)")
+            print("📊 Upload history count: \(testResults.uploadHistory.count)")
         }
     }
     
@@ -64,8 +67,19 @@ struct ResultView: View {
     
     private var uploadDownloadView: some View {
         HStack(spacing: 10) {
-            UploadDownloadView(isDownload: true, speed: .constant(testResults.downloadSpeed), isHistoryGiven: true, speedHistory: testResults.downloadHistory)
-            UploadDownloadView(isDownload: false, isGreen: false, speed: .constant(testResults.uploadSpeed), isHistoryGiven: true, speedHistory: testResults.uploadHistory)
+            UploadDownloadView(
+                isDownload: true,
+                speed: .constant(testResults.downloadSpeed),
+                isHistoryGiven: true,
+                speedHistory: testResults.downloadHistory
+            )
+            UploadDownloadView(
+                isDownload: false,
+                isGreen: false,
+                speed: .constant(testResults.uploadSpeed),
+                isHistoryGiven: true,
+                speedHistory: testResults.uploadHistory
+            )
         }
     }
     
@@ -133,7 +147,7 @@ struct ResultView: View {
                         .foregroundStyle(.white.opacity(0.15))
                     Capsule()
                         .foregroundStyle(Color(hex: "#4599F5"))
-                        .frame(width: (UIScreen.main.bounds.width - 39) * testResults.bandwidth / 200.0)
+                        .frame(width: (UIScreen.main.bounds.width - 39) * min(testResults.bandwidth / 200.0, 1.0))
                 }
                 .frame(height: 20)
                 
@@ -191,7 +205,7 @@ struct ResultView: View {
             HStack(spacing: 4) {
                 ForEach(0..<5) { i in
                     RoundedRectangle(cornerRadius: 15)
-                        .foregroundStyle((i <= measure) ? Color(hex: "#4599F5") : .white.opacity(0.15))
+                        .foregroundStyle((i < measure) ? Color(hex: "#4599F5") : .white.opacity(0.15))
                         .frame(width: 10, height: 23, alignment: .center)
                 }
             }
@@ -202,7 +216,7 @@ struct ResultView: View {
     private var retryTestView: some View {
         VStack {
             Button {
-                // here we should setup retrying test
+                retryTest()
             } label: {
                 ZStack {
                     Capsule()
@@ -218,6 +232,14 @@ struct ResultView: View {
             Text("A repeat test will give more accurate results")
                 .foregroundStyle(.white.opacity(0.5))
                 .font(.onest(.medium, size: 14))
+        }
+    }
+    
+    private func retryTest() {
+        dismiss()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            NotificationCenter.default.post(name: NSNotification.Name("StartSpeedTest"), object: nil)
         }
     }
 }

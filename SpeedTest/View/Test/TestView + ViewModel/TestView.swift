@@ -14,6 +14,13 @@ struct TestView: View {
         } message: {
             Text("The test could not be completed. Check your internet connection and try again.")
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("StartSpeedTest"))) { _ in
+            // Reset and start a new test when retry is triggered
+            viewModel.resetTest()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                viewModel.startTest()
+            }
+        }
     }
     
     private var content: some View {

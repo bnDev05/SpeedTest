@@ -27,7 +27,7 @@ final class TestViewModel: NSObject, ObservableObject {
     // Store test results to pass to ResultView
     @Published var testResults: TestResults?
     
-    // Store speed history for charts
+    // Store speed history for charts - these will be populated during test
     @Published var downloadSpeedHistory: [SpeedDataPoint] = []
     @Published var uploadSpeedHistory: [SpeedDataPoint] = []
     
@@ -83,12 +83,50 @@ final class TestViewModel: NSObject, ObservableObject {
         speedTestManager.$providerName
             .assign(to: &$sourceName)
         
-        // Bind download and upload speeds
+        // Bind download and upload speeds - and capture history
         speedTestManager.$downloadSpeed
-            .assign(to: &$downloadSpeed)
+            .sink { [weak self] newSpeed in
+                guard let self = self else { return }
+                self.downloadSpeed = newSpeed
+                
+                // Capture speed history during test
+                if self.isTestingStarted && newSpeed > 0 {
+                    let newIndex = self.downloadSpeedHistory.isEmpty ? 0 : (self.downloadSpeedHistory.last?.index ?? 0) + 1
+                    self.downloadSpeedHistory.append(SpeedDataPoint(index: newIndex, speed: newSpeed))
+                    
+                    // Limit to reasonable number of data points
+                    if self.downloadSpeedHistory.count > 50 {
+                        self.downloadSpeedHistory.removeFirst()
+                        // Reindex
+                        self.downloadSpeedHistory = self.downloadSpeedHistory.enumerated().map { index, point in
+                            SpeedDataPoint(index: index, speed: point.speed)
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
         
         speedTestManager.$uploadSpeed
-            .assign(to: &$uploadSpeed)
+            .sink { [weak self] newSpeed in
+                guard let self = self else { return }
+                self.uploadSpeed = newSpeed
+                
+                // Capture speed history during test
+                if self.isTestingStarted && newSpeed > 0 {
+                    let newIndex = self.uploadSpeedHistory.isEmpty ? 0 : (self.uploadSpeedHistory.last?.index ?? 0) + 1
+                    self.uploadSpeedHistory.append(SpeedDataPoint(index: newIndex, speed: newSpeed))
+                    
+                    // Limit to reasonable number of data points
+                    if self.uploadSpeedHistory.count > 50 {
+                        self.uploadSpeedHistory.removeFirst()
+                        // Reindex
+                        self.uploadSpeedHistory = self.uploadSpeedHistory.enumerated().map { index, point in
+                            SpeedDataPoint(index: index, speed: point.speed)
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
         
         serverManager.$selectedServer
             .sink { [weak self] server in
@@ -206,6 +244,8 @@ final class TestViewModel: NSObject, ObservableObject {
         lossAmount = 0
         downloadSpeed = 0
         uploadSpeed = 0
+        downloadSpeedHistory = []
+        uploadSpeedHistory = []
         isTestingStarted = false
         
         speedState = .connecting
@@ -237,8 +277,10 @@ final class TestViewModel: NSObject, ObservableObject {
                     self.speed = finalSpeed
                     self.isTestingStarted = false
                     
+                    // Create test results with captured history
                     self.createTestResults()
                     
+                    // Navigate to results
                     self.navigateToResults()
                     
                 case .error(let message):
@@ -288,6 +330,8 @@ final class TestViewModel: NSObject, ObservableObject {
         lossAmount = 0
         downloadSpeed = 0
         uploadSpeed = 0
+        downloadSpeedHistory = []
+        uploadSpeedHistory = []
         isTestingStarted = false
     }
 }
