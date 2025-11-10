@@ -34,7 +34,7 @@ struct TestView: View {
                 isConnected: viewModel.isConnected,
                 onStart: {
                     viewModel.startTest()
-                }
+                }, isDownloadSpeed: $viewModel.isDownloadSpeed
             )
             .frame(width: UIScreen.main.bounds.width - 80, height: UIScreen.main.bounds.width - 80, alignment: .center)
             Spacer()

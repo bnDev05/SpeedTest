@@ -6,7 +6,17 @@ import UIKit
 import CoreLocation
 import Combine
 
-// MARK: - Speed Test Manager
+// MARK: - Test Phase Enum
+enum TestPhase {
+    case idle
+    case connecting
+    case ping
+    case download
+    case upload
+    case complete
+}
+
+// MARK: - Speed Test Manager (Updated)
 final class SpeedTestManager: ObservableObject {
     static let shared = SpeedTestManager()
     
@@ -19,6 +29,9 @@ final class SpeedTestManager: ObservableObject {
     @Published var connectionType: ConnectionType = .wifi
     @Published var providerName: String = "Unknown"
     @Published var currentServer: ServerModel?
+    
+    // NEW: Track current test phase
+    @Published var currentTestPhase: TestPhase = .idle
     
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor")
@@ -37,7 +50,234 @@ final class SpeedTestManager: ObservableObject {
         detectProvider()
     }
     
-    // MARK: - Network Monitoring
+    // MARK: - Speed Test Functions (Updated)
+    func performSpeedTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {
+        await MainActor.run {
+            downloadSpeed = 0
+            uploadSpeed = 0
+            ping = 0
+            jitter = 0
+            packetLoss = 0
+            pingResults = []
+            currentServer = server
+            currentTestPhase = .connecting
+        }
+        
+        progress(.connecting, .connecting)
+        
+        // Step 1: Ping Test
+        await MainActor.run { currentTestPhase = .ping }
+        await performPingTest(server: server, progress: progress)
+        
+        // Step 2: Download Test
+        await MainActor.run { currentTestPhase = .download }
+        await performDownloadTest(server: server, progress: progress)
+        
+        // Step 3: Upload Test
+        await MainActor.run { currentTestPhase = .upload }
+        await performUploadTest(server: server, progress: progress)
+        
+        // Complete
+        await MainActor.run {
+            currentTestPhase = .complete
+            progress(.complete(speed: max(downloadSpeed, uploadSpeed)), .complete)
+        }
+    }
+    
+    // MARK: - Ping Test (Updated)
+    private func performPingTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {
+        let pingCount = 10
+        var results: [Double] = []
+        
+        for _ in 0..<pingCount {
+            if let pingTime = await measurePing(host: server.host) {
+                results.append(pingTime)
+                
+                await MainActor.run {
+                    let avgPing = results.reduce(0, +) / Double(results.count)
+                    self.ping = Int(avgPing)
+                    
+                    if results.count > 1 {
+                        var jitterSum = 0.0
+                        for j in 1..<results.count {
+                            jitterSum += abs(results[j] - results[j-1])
+                        }
+                        self.jitter = Int(jitterSum / Double(results.count - 1))
+                    }
+                }
+            }
+            
+            try? await Task.sleep(nanoseconds: 100_000_000)
+        }
+        
+        await MainActor.run {
+            pingResults = results
+            let lossCount = pingCount - results.count
+            self.packetLoss = Int(Double(lossCount) / Double(pingCount) * 100)
+        }
+    }
+    
+    func measurePing(host: String) async -> Double? {
+        let startTime = Date()
+        
+        var cleanHost = host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
+        
+        guard let url = URL(string: "https://\(cleanHost)") else { return nil }
+        
+        do {
+            var request = URLRequest(url: url, timeoutInterval: 5)
+            request.httpMethod = "HEAD"
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                return nil
+            }
+            
+            let pingTime = Date().timeIntervalSince(startTime) * 1000
+            return pingTime
+        } catch {
+            return nil
+        }
+    }
+    
+    // MARK: - Download Test (Updated)
+    private func performDownloadTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {
+        let testDuration: TimeInterval = 10
+        let startTime = Date()
+        var totalBytesReceived: Int64 = 0
+        var testCount = 0
+        
+        await withTaskGroup(of: Int64?.self) { group in
+            while Date().timeIntervalSince(startTime) < testDuration {
+                group.addTask {
+                    await self.downloadChunk(from: server)
+                }
+                
+                testCount += 1
+                if testCount >= 3 {
+                    if let bytes = await group.next() {
+                        if let actualBytes = bytes {
+                            totalBytesReceived += actualBytes
+                            
+                            let elapsedTime = Date().timeIntervalSince(startTime)
+                            if elapsedTime > 0 {
+                                let speedMbps = (Double(totalBytesReceived) * 8) / (elapsedTime * 1_000_000)
+                                
+                                await MainActor.run {
+                                    self.downloadSpeed = speedMbps
+                                    progress(.testing(speed: speedMbps), .download)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if Date().timeIntervalSince(startTime) >= testDuration {
+                    break
+                }
+            }
+            
+            for await bytes in group {
+                if let actualBytes = bytes {
+                    totalBytesReceived += actualBytes
+                }
+            }
+        }
+        
+        let finalElapsedTime = Date().timeIntervalSince(startTime)
+        if finalElapsedTime > 0 {
+            let finalSpeedMbps = (Double(totalBytesReceived) * 8) / (finalElapsedTime * 1_000_000)
+            await MainActor.run {
+                self.downloadSpeed = finalSpeedMbps
+            }
+        }
+    }
+    
+    private func downloadChunk(from server: ServerModel) async -> Int64? {
+        let sizes = [1048576, 2097152, 5242880]
+        let randomSize = sizes.randomElement() ?? 1048576
+        
+        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
+        
+        let downloadURLString = "https://\(cleanHost)/download?nocache=\(UUID().uuidString)&size=\(randomSize)"
+        
+        guard let url = URL(string: downloadURLString) else { return nil }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return Int64(data.count)
+        } catch {
+            return nil
+        }
+    }
+    
+    // MARK: - Upload Test (Updated)
+    private func performUploadTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {
+        let testDuration: TimeInterval = 10
+        let startTime = Date()
+        var totalBytesUploaded: Int64 = 0
+        
+        let chunkSize = 1024 * 1024
+        
+        while Date().timeIntervalSince(startTime) < testDuration {
+            let testData = Data(count: chunkSize)
+            
+            if let bytes = await uploadChunk(to: server, data: testData) {
+                totalBytesUploaded += bytes
+                
+                let elapsedTime = Date().timeIntervalSince(startTime)
+                if elapsedTime > 0 {
+                    let speedMbps = (Double(totalBytesUploaded) * 8) / (elapsedTime * 1_000_000)
+                    
+                    await MainActor.run {
+                        self.uploadSpeed = speedMbps
+                        progress(.testing(speed: speedMbps), .upload)
+                    }
+                }
+            } else {
+                break
+            }
+        }
+    }
+    
+    private func uploadChunk(to server: ServerModel, data: Data) async -> Int64? {
+        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
+        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
+        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
+        
+        let uploadURLString = "https://\(cleanHost)/upload?nocache=\(UUID().uuidString)"
+        guard let url = URL(string: uploadURLString) else { return nil }
+        
+        do {
+            var request = URLRequest(url: url, timeoutInterval: 30)
+            request.httpMethod = "POST"
+            request.httpBody = data
+            request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                return nil
+            }
+            
+            return Int64(data.count)
+        } catch {
+            return nil
+        }
+    }
+    
+    // Keep existing methods...
+    func getDeviceName() -> String {
+        return UIDevice.current.name
+    }
+    
     private func startMonitoring() {
         monitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
@@ -88,231 +328,6 @@ final class SpeedTestManager: ObservableObject {
             return ssid
         }
         return nil
-    }
-    
-    // MARK: - Speed Test Functions
-    func performSpeedTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        await MainActor.run {
-            downloadSpeed = 0
-            uploadSpeed = 0
-            ping = 0
-            jitter = 0
-            packetLoss = 0
-            pingResults = []
-            currentServer = server
-        }
-        
-        // Step 1: Ping Test
-        await performPingTest(server: server, progress: progress)
-        
-        // Step 2: Download Test
-        await performDownloadTest(server: server, progress: progress)
-        
-        // Step 3: Upload Test
-        await performUploadTest(server: server, progress: progress)
-        
-        // Complete
-        await MainActor.run {
-            progress(.complete(speed: max(downloadSpeed, uploadSpeed)))
-        }
-    }
-    
-    // MARK: - Ping Test
-    private func performPingTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        let pingCount = 10
-        var results: [Double] = []
-        
-        for _ in 0..<pingCount {
-            if let pingTime = await measurePing(host: server.host) {
-                results.append(pingTime)
-                
-                await MainActor.run {
-                    let avgPing = results.reduce(0, +) / Double(results.count)
-                    self.ping = Int(avgPing)
-                    
-                    if results.count > 1 {
-                        var jitterSum = 0.0
-                        for j in 1..<results.count {
-                            jitterSum += abs(results[j] - results[j-1])
-                        }
-                        self.jitter = Int(jitterSum / Double(results.count - 1))
-                    }
-                }
-            }
-            
-            try? await Task.sleep(nanoseconds: 100_000_000)
-        }
-        
-        await MainActor.run {
-            pingResults = results
-            let lossCount = pingCount - results.count
-            self.packetLoss = Int(Double(lossCount) / Double(pingCount) * 100)
-        }
-    }
-    
-    func measurePing(host: String) async -> Double? {
-        let startTime = Date()
-        
-        // Clean host - remove protocol if present
-        var cleanHost = host.replacingOccurrences(of: "http://", with: "")
-        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
-        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
-        
-        guard let url = URL(string: "https://\(cleanHost)") else { return nil }
-        
-        do {
-            var request = URLRequest(url: url, timeoutInterval: 5)
-            request.httpMethod = "HEAD"
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                return nil
-            }
-            
-            let pingTime = Date().timeIntervalSince(startTime) * 1000
-            return pingTime
-        } catch {
-            return nil
-        }
-    }
-    
-    // MARK: - Download Test
-    private func performDownloadTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        let testDuration: TimeInterval = 10
-        let startTime = Date()
-        var totalBytesReceived: Int64 = 0
-        var testCount = 0
-        
-        // Use multiple concurrent downloads for accurate measurement
-        await withTaskGroup(of: Int64?.self) { group in
-            while Date().timeIntervalSince(startTime) < testDuration {
-                group.addTask {
-                    await self.downloadChunk(from: server)
-                }
-                
-                testCount += 1
-                if testCount >= 3 { // Limit concurrent downloads
-                    if let bytes = await group.next() {
-                        if let actualBytes = bytes {
-                            totalBytesReceived += actualBytes
-                            
-                            let elapsedTime = Date().timeIntervalSince(startTime)
-                            if elapsedTime > 0 {
-                                let speedMbps = (Double(totalBytesReceived) * 8) / (elapsedTime * 1_000_000)
-                                
-                                await MainActor.run {
-                                    self.downloadSpeed = speedMbps
-                                    progress(.testing(speed: speedMbps))
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                if Date().timeIntervalSince(startTime) >= testDuration {
-                    break
-                }
-            }
-            
-            // Collect remaining results
-            for await bytes in group {
-                if let actualBytes = bytes {
-                    totalBytesReceived += actualBytes
-                }
-            }
-        }
-        
-        let finalElapsedTime = Date().timeIntervalSince(startTime)
-        if finalElapsedTime > 0 {
-            let finalSpeedMbps = (Double(totalBytesReceived) * 8) / (finalElapsedTime * 1_000_000)
-            await MainActor.run {
-                self.downloadSpeed = finalSpeedMbps
-            }
-        }
-    }
-    
-    private func downloadChunk(from server: ServerModel) async -> Int64? {
-        // Generate random test file URL from server
-        let sizes = [1048576, 2097152, 5242880] // 1MB, 2MB, 5MB
-        let randomSize = sizes.randomElement() ?? 1048576
-        
-        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
-        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
-        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
-        
-        // Try server-specific download endpoint
-        let downloadURLString = "https://\(cleanHost)/download?nocache=\(UUID().uuidString)&size=\(randomSize)"
-        
-        guard let url = URL(string: downloadURLString) else { return nil }
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            return Int64(data.count)
-        } catch {
-            return nil
-        }
-    }
-    
-    // MARK: - Upload Test
-    private func performUploadTest(server: ServerModel, progress: @escaping (SpeedTestState) -> Void) async {
-        let testDuration: TimeInterval = 10
-        let startTime = Date()
-        var totalBytesUploaded: Int64 = 0
-        
-        let chunkSize = 1024 * 1024 // 1MB chunks
-        
-        while Date().timeIntervalSince(startTime) < testDuration {
-            let testData = Data(count: chunkSize)
-            
-            if let bytes = await uploadChunk(to: server, data: testData) {
-                totalBytesUploaded += bytes
-                
-                let elapsedTime = Date().timeIntervalSince(startTime)
-                if elapsedTime > 0 {
-                    let speedMbps = (Double(totalBytesUploaded) * 8) / (elapsedTime * 1_000_000)
-                    
-                    await MainActor.run {
-                        self.uploadSpeed = speedMbps
-                    }
-                }
-            } else {
-                break
-            }
-        }
-    }
-    
-    private func uploadChunk(to server: ServerModel, data: Data) async -> Int64? {
-        var cleanHost = server.host.replacingOccurrences(of: "http://", with: "")
-        cleanHost = cleanHost.replacingOccurrences(of: "https://", with: "")
-        cleanHost = cleanHost.components(separatedBy: "/").first ?? cleanHost
-        
-        let uploadURLString = "https://\(cleanHost)/upload?nocache=\(UUID().uuidString)"
-        guard let url = URL(string: uploadURLString) else { return nil }
-        
-        do {
-            var request = URLRequest(url: url, timeoutInterval: 30)
-            request.httpMethod = "POST"
-            request.httpBody = data
-            request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
-                return nil
-            }
-            
-            return Int64(data.count)
-        } catch {
-            return nil
-        }
-    }
-    
-    // MARK: - Helper Methods
-    func getDeviceName() -> String {
-        return UIDevice.current.name
     }
 }
 

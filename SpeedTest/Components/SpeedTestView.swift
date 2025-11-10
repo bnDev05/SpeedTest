@@ -25,7 +25,7 @@ struct SpeedTestView: View {
                 // Main speedometer
                 SpeedometerView(state: $currentState, speed: $speed, onStart: {
                     startTest()
-                })
+                }, isDownloadSpeed: .constant(true))
                     .frame(width: 350, height: 350)
                 
                 Spacer()
@@ -94,10 +94,7 @@ struct SpeedometerView: View {
     var isConnected: Bool = true
     var onStart: (() -> Void)
     @State private var showMessage = false
-    
-    // Track previous speed to determine direction
-    @State private var previousSpeed: Double = 0
-    @State private var isSpeedIncreasing: Bool = true
+    @Binding var isDownloadSpeed: Bool
 
     let speedMarks = [
         (value: 0, angle: 150.0),
@@ -149,11 +146,17 @@ struct SpeedometerView: View {
                         .trim(from: 0, to: min(currentProgress * (240.0 / 360.0), 240.0 / 360.0))
                         .stroke(
                             AngularGradient(
-                                gradient: Gradient(colors: [
-                                    Color(hex: "#03A9EB"),
-                                    Color(hex: "#71F681"),
-                                    Color(red: 0.7, green: 1, blue: 0.3)
-                                ]),
+                                gradient: Gradient(colors:
+                                                    isDownloadSpeed ?
+                                                    [
+                                                        Color(hex: "#71F681"),
+                                                        Color(hex: "#03A9EB")
+                                                    ] :
+                                                    [
+                                                        Color(hex: "#F472AE"),
+                                                        Color(hex: "#7652D0")
+                                                    ]
+                                                  ),
                                 center: .center,
                                 startAngle: .degrees(0),
                                 endAngle: .degrees(240)
@@ -196,7 +199,7 @@ struct SpeedometerView: View {
                             .monospacedDigit()
                         
                         HStack(spacing: 6) {
-                            Image(isSpeedIncreasing ? .pinkUploadIcon : .speedDownIcon)
+                            Image(!isDownloadSpeed ? .pinkUploadIcon : .speedDownIcon)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 28, height: 28, alignment: .center)
@@ -209,16 +212,6 @@ struct SpeedometerView: View {
                     .position(x: center.x, y: center.y + radius * 0.9)
                 }
             }
-        }
-        .onChange(of: currentSpeed) { newSpeed in
-            // Update speed direction
-            if newSpeed > previousSpeed {
-                isSpeedIncreasing = true
-            } else if newSpeed < previousSpeed {
-                isSpeedIncreasing = false
-            }
-            
-            previousSpeed = newSpeed
         }
     }
     
