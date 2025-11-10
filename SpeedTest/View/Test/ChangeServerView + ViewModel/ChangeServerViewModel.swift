@@ -28,16 +28,13 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     @Published var isLoading: Bool = false
     @Published var userLocation: CLLocation?
     
-    // MARK: - Private Properties
     private let serverManager = ServerManager.shared
     private let locationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Initialization
     override init() {
         super.init()
         
-        // Update selected server from server manager if available
         if let currentServer = serverManager.selectedServer {
             self.selectedServer = currentServer
         }
@@ -47,9 +44,7 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         loadServersIfNeeded()
     }
     
-    // MARK: - Setup
     private func setupBindings() {
-        // Bind servers from server manager
         serverManager.$servers
             .receive(on: DispatchQueue.main)
             .sink { [weak self] servers in
@@ -59,7 +54,6 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Filter servers based on search text
         $searchText
             .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .sink { [weak self] searchText in
@@ -68,7 +62,6 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Update loading state
         serverManager.$isLoading
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isLoading in
@@ -77,7 +70,6 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Update selected server when it changes
         serverManager.$selectedServer
             .compactMap { $0 }
             .receive(on: DispatchQueue.main)
@@ -92,22 +84,18 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.delegate = self
         
-        // Request location if authorized
         let status = locationManager.authorizationStatus
         if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.requestLocation()
         }
     }
     
-    // MARK: - Server Management
     private func loadServersIfNeeded() {
-        // Only fetch if we don't have servers yet
         if serverManager.servers.isEmpty {
             Task {
                 await serverManager.fetchServers(userLocation: userLocation)
             }
         } else {
-            // Use existing servers
             servers = serverManager.servers
             updateFilteredServers()
         }
@@ -127,14 +115,12 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Server Selection
     func selectServer(_ server: ServerModel) {
         selectedServer = server
         serverManager.selectServer(server)
     }
     
     func selectAutomatically() {
-        // Select the closest server (first in sorted list)
         if let closestServer = filteredServers.first {
             selectServer(closestServer)
         } else if let firstServer = servers.first {
@@ -142,12 +128,10 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Distance Calculation
     private func updateServerDistances(location: CLLocation) {
         serverManager.updateServerDistances(userLocation: location)
     }
     
-    // MARK: - Ping Test
     func testServerPing(_ server: ServerModel) async -> Int? {
         let speedTestManager = SpeedTestManager.shared
         
@@ -158,7 +142,6 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         return nil
     }
     
-    // MARK: - Refresh
     func refreshServers() {
         Task {
             await serverManager.fetchServers(userLocation: userLocation)
@@ -166,7 +149,6 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     }
 }
 
-// MARK: - CLLocationManagerDelegate
 extension ChangeServerViewModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
@@ -180,7 +162,7 @@ extension ChangeServerViewModel: CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
         case .denied, .restricted:
-            // Continue without location
+            
             break
         case .notDetermined:
             break

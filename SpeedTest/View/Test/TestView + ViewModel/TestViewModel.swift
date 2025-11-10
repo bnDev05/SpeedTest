@@ -3,7 +3,6 @@ import Combine
 import CoreLocation
 
 final class TestViewModel: NSObject, ObservableObject {
-    // MARK: - Published Properties
     @Published var pingAmount: Int = 0
     @Published var jitterAmount: Int = 0
     @Published var lossAmount: Int = 0
@@ -19,14 +18,16 @@ final class TestViewModel: NSObject, ObservableObject {
     @Published var serverName: String = "Loading..."
     @Published var serverLocationName: String = "..."
     
-    // MARK: - Private Properties
+    @Published var isTestingStarter: Bool = true
+    @Published var downloadSpeed: Double = 0.0
+    @Published var uploadSpeed: Double = 0.0
+    
     private let speedTestManager = SpeedTestManager.shared
     private let serverManager = ServerManager.shared
     private let locationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
     private var currentLocation: CLLocation?
     
-    // MARK: - Initialization
     override init() {
         super.init()
         setupBindings()
@@ -34,10 +35,8 @@ final class TestViewModel: NSObject, ObservableObject {
         updateConnectionInfo()
         updateDeviceInfo()
         
-        // Request location permission
         locationManager.requestWhenInUseAuthorization()
         
-        // Load servers immediately if we don't have any
         Task {
             if serverManager.servers.isEmpty {
                 print("🚀 Loading servers on init...")
@@ -48,9 +47,7 @@ final class TestViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Setup
     private func setupBindings() {
-        // Bind speed test manager values
         speedTestManager.$ping
             .assign(to: &$pingAmount)
         
@@ -63,7 +60,6 @@ final class TestViewModel: NSObject, ObservableObject {
         speedTestManager.$isConnected
             .assign(to: &$isConnected)
         
-        // Bind connection type and provider
         speedTestManager.$connectionType
             .sink { [weak self] connectionType in
                 self?.isWifiSource = (connectionType == .wifi)
@@ -73,7 +69,6 @@ final class TestViewModel: NSObject, ObservableObject {
         speedTestManager.$providerName
             .assign(to: &$sourceName)
         
-        // Bind selected server info
         serverManager.$selectedServer
             .sink { [weak self] server in
                 self?.updateServerInfo(server)
@@ -86,7 +81,6 @@ final class TestViewModel: NSObject, ObservableObject {
         locationManager.delegate = self
     }
     
-    // MARK: - Update Methods
     private func updateConnectionInfo() {
         isConnected = speedTestManager.isConnected
         isWifiSource = speedTestManager.connectionType == .wifi
@@ -105,7 +99,7 @@ final class TestViewModel: NSObject, ObservableObject {
         }
         
         serverName = server.provider
-        serverLocationName = "\(server.city), \(server.country)"
+        serverLocationName = "\(server.city)"
     }
     
     func loadServers() {
@@ -114,7 +108,6 @@ final class TestViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Speed Test
     func startTest() {
         guard isConnected else {
             speedState = .error(message: "No internet connection")
@@ -126,7 +119,6 @@ final class TestViewModel: NSObject, ObservableObject {
             return
         }
         
-        // Reset values
         speed = 0
         pingAmount = 0
         jitterAmount = 0
@@ -144,7 +136,6 @@ final class TestViewModel: NSObject, ObservableObject {
             Task { @MainActor in
                 self?.speedState = state
                 
-                // Update speed value for UI
                 switch state {
                 case .testing(let currentSpeed):
                     self?.speed = currentSpeed
@@ -157,7 +148,6 @@ final class TestViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Helper Methods
     func refreshConnectionStatus() {
         updateConnectionInfo()
     }
@@ -171,19 +161,16 @@ final class TestViewModel: NSObject, ObservableObject {
     }
 }
 
-// MARK: - CLLocationManagerDelegate
 extension TestViewModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         
         currentLocation = location
         
-        // Fetch servers with user location
         Task {
             await serverManager.fetchServers(userLocation: location)
         }
         
-        // Stop updating to save battery
         locationManager.stopUpdatingLocation()
     }
     
@@ -192,7 +179,6 @@ extension TestViewModel: CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
         case .denied, .restricted:
-            // Fetch servers without location
             Task {
                 await serverManager.fetchServers(userLocation: nil)
             }
@@ -206,7 +192,6 @@ extension TestViewModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
         
-        // Fetch servers without location as fallback
         Task {
             await serverManager.fetchServers(userLocation: nil)
         }

@@ -21,7 +21,12 @@ struct TestView: View {
             }
             .frame(width: UIScreen.main.bounds.width - 80, height: UIScreen.main.bounds.width - 80, alignment: .center)
             Spacer()
-            sourceAndProvidersView
+            
+            if viewModel.isTestingStarter {
+                uploadDownloadView
+            } else {
+                sourceAndProvidersView
+            }
         }
         .padding(.horizontal)
         .padding(.bottom, 15)
@@ -105,6 +110,13 @@ struct TestView: View {
             Spacer()
         }
         .frame(height: 52)
+    }
+    
+    private var uploadDownloadView: some View {
+        HStack {
+            UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
+            UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
+        }
     }
 }
 

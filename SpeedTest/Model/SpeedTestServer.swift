@@ -19,7 +19,6 @@ struct ServerModel: Identifiable, Codable {
     let supportedProtocols: [String]
     let bandwidthLimits: BandwidthLimits?
     
-    // Computed property for coordinate
     var location: CLLocation {
         CLLocation(latitude: latitude, longitude: longitude)
     }

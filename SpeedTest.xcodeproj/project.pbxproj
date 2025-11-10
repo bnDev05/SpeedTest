@@ -18,6 +18,7 @@
 		D1AA54E52EBDB1B300A3CDE6 /* BugsnagPerformanceSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D1AA54E42EBDB1B300A3CDE6 /* BugsnagPerformanceSwiftUI */; };
 		D1AA54E82EBDB67100A3CDE6 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D1AA54E72EBDB67100A3CDE6 /* FirebaseCrashlytics */; };
 		D1AA54EE2EBDB6E800A3CDE6 /* ApphudSDK in Frameworks */ = {isa = PBXBuildFile; productRef = D1AA54ED2EBDB6E800A3CDE6 /* ApphudSDK */; };
+		D1AA5AFB2EC1C01D00A3CDE6 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = D1AA5AFA2EC1C01D00A3CDE6 /* DGCharts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 				D1AA54D72EBDB13A00A3CDE6 /* FirebaseCore in Frameworks */,
 				D1AA54DC2EBDB17700A3CDE6 /* BugsnagNetworkRequestPlugin in Frameworks */,
 				D1AA54DA2EBDB17700A3CDE6 /* Bugsnag in Frameworks */,
+				D1AA5AFB2EC1C01D00A3CDE6 /* DGCharts in Frameworks */,
 				D1AA54D52EBDB13A00A3CDE6 /* FirebaseAnalyticsCore in Frameworks */,
 				D1AA54E32EBDB1B300A3CDE6 /* BugsnagPerformanceSwift in Frameworks */,
 				D1AA54E12EBDB1B300A3CDE6 /* BugsnagPerformanceNamedSpans in Frameworks */,
@@ -122,6 +124,7 @@
 				D1AA54E42EBDB1B300A3CDE6 /* BugsnagPerformanceSwiftUI */,
 				D1AA54E72EBDB67100A3CDE6 /* FirebaseCrashlytics */,
 				D1AA54ED2EBDB6E800A3CDE6 /* ApphudSDK */,
+				D1AA5AFA2EC1C01D00A3CDE6 /* DGCharts */,
 			);
 			productName = SpeedTest;
 			productReference = D1AA54BA2EBDAC7600A3CDE6 /* SpeedTest.app */;
@@ -156,6 +159,7 @@
 				D1AA54D82EBDB17700A3CDE6 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
 				D1AA54DD2EBDB1B200A3CDE6 /* XCRemoteSwiftPackageReference "bugsnag-cocoa-performance" */,
 				D1AA54EC2EBDB6E800A3CDE6 /* XCRemoteSwiftPackageReference "ApphudSDK" */,
+				D1AA5AF92EC1C01D00A3CDE6 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D1AA54BB2EBDAC7600A3CDE6 /* Products */;
@@ -325,7 +329,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -363,7 +367,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -441,6 +445,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		D1AA5AF92EC1C01D00A3CDE6 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -498,6 +510,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D1AA54EC2EBDB6E800A3CDE6 /* XCRemoteSwiftPackageReference "ApphudSDK" */;
 			productName = ApphudSDK;
+		};
+		D1AA5AFA2EC1C01D00A3CDE6 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1AA5AF92EC1C01D00A3CDE6 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
