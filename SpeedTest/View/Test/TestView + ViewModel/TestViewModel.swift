@@ -58,6 +58,7 @@ final class TestViewModel: NSObject, ObservableObject {
                 print("✅ Using cached servers: \(serverManager.servers.count)")
             }
         }
+        fetchIPAddresses()
     }
     
     private func setupBindings() {
@@ -109,6 +110,62 @@ final class TestViewModel: NSObject, ObservableObject {
     
     private func updateDeviceInfo() {
         phoneName = speedTestManager.getDeviceName()
+    }
+    
+    private func fetchIPAddresses() {
+        // Get internal IP
+        internalIP = getInternalIP() ?? "N/A"
+        
+        // Get external IP
+        Task {
+            externalIP = await getExternalIP() ?? "N/A"
+        }
+    }
+    
+    private func getInternalIP() -> String? {
+        var address: String?
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        
+        if getifaddrs(&ifaddr) == 0 {
+            var ptr = ifaddr
+            while ptr != nil {
+                defer { ptr = ptr?.pointee.ifa_next }
+                
+                let interface = ptr?.pointee
+                let addrFamily = interface?.ifa_addr.pointee.sa_family
+                
+                if addrFamily == UInt8(AF_INET) || addrFamily == UInt8(AF_INET6) {
+                    let name = String(cString: (interface?.ifa_name)!)
+                    if name == "en0" || name == "pdp_ip0" {
+                        var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                        getnameinfo(interface?.ifa_addr,
+                                  socklen_t((interface?.ifa_addr.pointee.sa_len)!),
+                                  &hostname,
+                                  socklen_t(hostname.count),
+                                  nil,
+                                  socklen_t(0),
+                                  NI_NUMERICHOST)
+                        address = String(cString: hostname)
+                    }
+                }
+            }
+            freeifaddrs(ifaddr)
+        }
+        return address
+    }
+    
+    private func getExternalIP() async -> String? {
+        guard let url = URL(string: "https://api.ipify.org?format=text") else {
+            return nil
+        }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        } catch {
+            print("Failed to fetch external IP: \(error)")
+            return nil
+        }
     }
     
     private func updateServerInfo(_ server: ServerModel?) {
