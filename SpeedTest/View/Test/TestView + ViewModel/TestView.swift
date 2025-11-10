@@ -9,6 +9,11 @@ struct TestView: View {
             content
         }
         .navigationBarBackButtonHidden()
+        .alert("Error", isPresented: $viewModel.showErrorAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The test could not be completed. Check your internet connection and try again.")
+        }
     }
     
     private var content: some View {
@@ -16,13 +21,18 @@ struct TestView: View {
             title
             topInfoView
             Spacer()
-            SpeedometerView(state: $viewModel.speedState, speed: $viewModel.speed, isConnected: viewModel.isConnected) {
-                viewModel.startTest()
-            }
+            SpeedometerView(
+                state: $viewModel.speedState,
+                speed: $viewModel.speed,
+                isConnected: viewModel.isConnected,
+                onStart: {
+                    viewModel.startTest()
+                }
+            )
             .frame(width: UIScreen.main.bounds.width - 80, height: UIScreen.main.bounds.width - 80, alignment: .center)
             Spacer()
             
-            if viewModel.isTestingStarter {
+            if viewModel.isTestingStarted {
                 uploadDownloadView
             } else {
                 sourceAndProvidersView
@@ -37,7 +47,6 @@ struct TestView: View {
             .font(.poppins(.semibold, size: 24))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, alignment: .leading)
-
     }
     
     private var topInfoView: some View {
@@ -113,9 +122,9 @@ struct TestView: View {
     }
     
     private var uploadDownloadView: some View {
-        HStack {
+        HStack(spacing: 10) {
             UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
-            UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
+            UploadDownloadView(isDownload: false, isGreen: false, speed: $viewModel.uploadSpeed)
         }
     }
 }

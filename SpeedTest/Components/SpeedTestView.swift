@@ -86,13 +86,12 @@ struct SpeedTestView: View {
         }
     }
 }
-
 // MARK: - Speedometer View
 struct SpeedometerView: View {
     @Binding var state: SpeedTestState
     @Binding var speed: Double
-    @State var isConnected: Bool = true
-    @State var onStart: (() -> Void)
+    var isConnected: Bool = true
+    var onStart: (() -> Void)
     @State private var showMessage = false
 
     let speedMarks = [
@@ -111,7 +110,7 @@ struct SpeedometerView: View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
             let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            let radius: CGFloat = size * 0.42  // slightly larger to fit new arc
+            let radius: CGFloat = size * 0.42
 
             ZStack {
                 // Background dark arc (unfilled portion)
@@ -125,12 +124,21 @@ struct SpeedometerView: View {
                     .rotationEffect(.degrees(150))
 
                 // If idle or finished — show Start Button
-                if state == .idle || state == .complete(speed: speed) || state == .error(message: "") {
-                    StartButtonView(action: {
-                        onStart()
-                    }, isConnected: isConnected, showMessage: $showMessage)
+                if state == .idle || state == .complete(speed: speed) {
+                    StartButtonView(
+                        action: {
+                            onStart()
+                        },
+                        isConnected: isConnected,
+                        showMessage: $showMessage
+                    )
                     .position(x: center.x, y: showMessage ? center.y + 60 : center.y)
 
+                } else if case .connecting = state {
+                    // Show connecting animation
+                    ConnectingButtonView()
+                        .position(x: center.x, y: center.y)
+                    
                 } else {
                     // Progress arc
                     Circle()
@@ -155,7 +163,7 @@ struct SpeedometerView: View {
                     // Speed number labels
                     ForEach(speedMarks, id: \.value) { mark in
                         let radian = mark.angle * .pi / 180
-                        let labelRadius = radius * 0.78 // slightly further in
+                        let labelRadius = radius * 0.78
                         let x = center.x + labelRadius * cos(radian)
                         let y = center.y + labelRadius * sin(radian)
                         
@@ -197,7 +205,6 @@ struct SpeedometerView: View {
                 }
             }
         }
-        
     }
     
     // MARK: - Computed properties
@@ -215,7 +222,6 @@ struct SpeedometerView: View {
     }
     
     private var currentProgress: Double {
-        // Map speed (0–1000 Mbps) to normalized 0–1 range
         let speed = currentSpeed
         if speed <= 0 { return 0 }
         else if speed <= 10 { return speed / 10 * 0.1 }
@@ -227,31 +233,7 @@ struct SpeedometerView: View {
     }
     
     private var needleAngle: Double {
-        // Needle now rotates 240° (120° → 360°)
         return 150 + (currentProgress * 240)
-    }
-}
-
-// MARK: - Needle Shape
-struct NeedleShape: Shape {
-    let angle: Double
-    
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let length = rect.width
-        let radian = angle * .pi / 180
-        
-        let endPoint = CGPoint(
-            x: center.x + length * cos(radian),
-            y: center.y + length * sin(radian)
-        )
-        
-        path.move(to: center)
-        path.addLine(to: endPoint)
-        
-        return path
     }
 }
 
@@ -266,33 +248,39 @@ struct StartButtonView: View {
         VStack(spacing: 30) {
             Button(action: action) {
                 ZStack {
-                    ZStack {
-                        Circle()
-                            .fill(LinearGradient(colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")], startPoint: .top, endPoint: .bottom))
-                            .shadow(color: isConnected ? Color(hex: "#245BEB").opacity(0.4) : Color(hex: "#F71C4C").opacity(0.4), radius: 54, x: 0, y: 0)
-                            .frame(width: 140, height: 140)
-                        
-                        Circle()
-                            .stroke(
-                                LinearGradient(
-                                    colors: isConnected
-                                    ? [Color(hex: "#03A9EB"), Color(hex: "#03A9EB").opacity(0.7)]
-                                    : [Color(hex: "#FF4D6D"), Color(hex: "#FF4D6D").opacity(0.7)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 9.49
-                            )
-                            .frame(width: 140, height: 140)
-                        
-                        Text("Start")
-                            .font(.poppins(.bold, size: 25))
-                            .foregroundColor(.white)
-                    }
+                    Circle()
+                        .fill(LinearGradient(
+                            colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ))
+                        .shadow(
+                            color: isConnected ? Color(hex: "#245BEB").opacity(0.4) : Color(hex: "#F71C4C").opacity(0.4),
+                            radius: 54,
+                            x: 0,
+                            y: 0
+                        )
+                        .frame(width: 140, height: 140)
+                    
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: isConnected
+                                ? [Color(hex: "#03A9EB"), Color(hex: "#03A9EB").opacity(0.7)]
+                                : [Color(hex: "#FF4D6D"), Color(hex: "#FF4D6D").opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 9.49
+                        )
+                        .frame(width: 140, height: 140)
+                    
+                    Text("Start")
+                        .font(.poppins(.bold, size: 25))
+                        .foregroundColor(.white)
                 }
             }
             .buttonStyle(PlainButtonStyle())
-
         
             if showMessage {
                 if isConnected {
@@ -329,7 +317,6 @@ struct StartButtonView: View {
         }
     }
     
-    
     private func showMessageWithFade() {
         showMessage = true
         
@@ -351,53 +338,84 @@ struct StartButtonView: View {
 
 // MARK: - Connecting Button View
 struct ConnectingButtonView: View {
+    @State private var progress: CGFloat = 0
     @State private var rotationDegrees: Double = 0
+    let maxTime: Double = 5.0 // max time in seconds
     
     var body: some View {
         ZStack {
+            // Background circle with gradient and shadow
             Circle()
-                .stroke(Color(red: 0.18, green: 0.2, blue: 0.24), lineWidth: 18)
-                .frame(width: 180, height: 180)
-            
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [Color.blue.opacity(0.15), Color.blue.opacity(0.05), Color.clear],
-                        center: .center,
-                        startRadius: 30,
-                        endRadius: 90
-                    )
+                .fill(LinearGradient(
+                    colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ))
+                .shadow(
+                    color: Color(hex: "#245BEB").opacity(0.4),
+                    radius: 54,
+                    x: 0,
+                    y: 0
                 )
-                .frame(width: 180, height: 180)
+                .frame(width: 140, height: 140)
             
-            ZStack {
-                Circle()
-                    .fill(Color(red: 0.13, green: 0.15, blue: 0.18))
-                    .frame(width: 110, height: 110)
-                
-                Circle()
-                    .trim(from: 0, to: 0.7)
-                    .stroke(
-                        LinearGradient(
-                            colors: [.blue, Color.blue.opacity(0.3)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        style: StrokeStyle(lineWidth: 3, lineCap: .round)
-                    )
-                    .frame(width: 110, height: 110)
-                    .rotationEffect(.degrees(rotationDegrees))
-                
-                Text("Connection...")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-            }
+            // Static background ring
+            Circle()
+                .stroke(
+                    Color(hex: "#292F38"),
+                    lineWidth: 10
+                )
+                .frame(width: 140, height: 140)
+            
+            // Animated progress ring
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color(hex: "#4599F5"), Color(hex: "#245BEB").opacity(0.7)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                )
+                .frame(width: 140, height: 140)
+                .rotationEffect(.degrees(-90)) // Start from bottom (270° = -90°)
+                .animation(.linear(duration: maxTime), value: progress)
+            
+            // Connection text
+            Text("Connection...")
+                .font(.poppins(.bold, size: 20))
+                .foregroundColor(.white)
         }
         .onAppear {
-            withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
-                rotationDegrees = 360
+            // Animate progress from 0 to 1 over maxTime seconds
+            withAnimation(.linear(duration: maxTime)) {
+                progress = 1.0
             }
         }
+    }
+}
+
+// MARK: - Needle Shape
+struct NeedleShape: Shape {
+    let angle: Double
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let length = rect.width
+        let radian = angle * .pi / 180
+        
+        let endPoint = CGPoint(
+            x: center.x + length * cos(radian),
+            y: center.y + length * sin(radian)
+        )
+        
+        path.move(to: center)
+        path.addLine(to: endPoint)
+        
+        return path
     }
 }
 

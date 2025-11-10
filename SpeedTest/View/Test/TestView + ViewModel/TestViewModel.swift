@@ -18,9 +18,22 @@ final class TestViewModel: NSObject, ObservableObject {
     @Published var serverName: String = "Loading..."
     @Published var serverLocationName: String = "..."
     
-    @Published var isTestingStarter: Bool = true
+    @Published var isTestingStarted: Bool = false
     @Published var downloadSpeed: Double = 0.0
     @Published var uploadSpeed: Double = 0.0
+    
+    @Published var showErrorAlert: Bool = false
+    
+    // Store test results to pass to ResultView
+    @Published var testResults: TestResults?
+    
+    // Store speed history for charts
+    @Published var downloadSpeedHistory: [SpeedDataPoint] = []
+    @Published var uploadSpeedHistory: [SpeedDataPoint] = []
+    
+    // IP addresses
+    @Published var internalIP: String = ""
+    @Published var externalIP: String = ""
     
     private let speedTestManager = SpeedTestManager.shared
     private let serverManager = ServerManager.shared
@@ -69,6 +82,13 @@ final class TestViewModel: NSObject, ObservableObject {
         speedTestManager.$providerName
             .assign(to: &$sourceName)
         
+        // Bind download and upload speeds
+        speedTestManager.$downloadSpeed
+            .assign(to: &$downloadSpeed)
+        
+        speedTestManager.$uploadSpeed
+            .assign(to: &$uploadSpeed)
+        
         serverManager.$selectedServer
             .sink { [weak self] server in
                 self?.updateServerInfo(server)
@@ -95,11 +115,13 @@ final class TestViewModel: NSObject, ObservableObject {
         guard let server = server else {
             serverName = "No server selected"
             serverLocationName = "Tap to select"
+            print("⚠️ No server selected")
             return
         }
         
         serverName = server.provider
-        serverLocationName = "\(server.city)"
+        serverLocationName = "\(server.city), \(server.country)"
+        print("📍 Server updated: \(server.name) in \(server.city)")
     }
     
     func loadServers() {
@@ -109,8 +131,9 @@ final class TestViewModel: NSObject, ObservableObject {
     }
     
     func startTest() {
+        // Check internet connection first
         guard isConnected else {
-            speedState = .error(message: "No internet connection")
+            showErrorAlert = true
             return
         }
         
@@ -119,10 +142,14 @@ final class TestViewModel: NSObject, ObservableObject {
             return
         }
         
+        // Reset values
         speed = 0
         pingAmount = 0
         jitterAmount = 0
         lossAmount = 0
+        downloadSpeed = 0
+        uploadSpeed = 0
+        isTestingStarted = false
         
         speedState = .connecting
         
@@ -134,18 +161,62 @@ final class TestViewModel: NSObject, ObservableObject {
     private func performSpeedTest(server: ServerModel) async {
         await speedTestManager.performSpeedTest(server: server) { [weak self] state in
             Task { @MainActor in
-                self?.speedState = state
+                guard let self = self else { return }
+                
+                self.speedState = state
                 
                 switch state {
+                case .idle:
+                    self.isTestingStarted = false
+                    
+                case .connecting:
+                    self.isTestingStarted = false
+                    
                 case .testing(let currentSpeed):
-                    self?.speed = currentSpeed
+                    self.isTestingStarted = true
+                    self.speed = currentSpeed
+                    
                 case .complete(let finalSpeed):
-                    self?.speed = finalSpeed
-                default:
-                    break
+                    self.speed = finalSpeed
+                    self.isTestingStarted = false
+                    
+                    self.createTestResults()
+                    
+                    self.navigateToResults()
+                    
+                case .error(let message):
+                    self.isTestingStarted = false
+                    print("Test error: \(message)")
+                    self.showErrorAlert = true
                 }
             }
         }
+    }
+    
+    private func createTestResults() {
+        testResults = TestResults(
+            downloadSpeed: downloadSpeed,
+            uploadSpeed: uploadSpeed,
+            downloadHistory: downloadSpeedHistory,
+            uploadHistory: uploadSpeedHistory,
+            ping: pingAmount,
+            jitter: jitterAmount,
+            packetLoss: lossAmount,
+            serverName: serverName,
+            serverLocation: serverLocationName,
+            connectionType: isWifiSource ? "Wi-Fi" : "Cellular",
+            providerName: sourceName,
+            internalIP: internalIP,
+            externalIP: externalIP,
+            testDate: Date()
+        )
+    }
+    
+    private func navigateToResults() {
+        guard let results = testResults else { return }
+        
+        let resultView = ResultView(testResults: results)
+        NavigationManager.shared.push(resultView)
     }
     
     func refreshConnectionStatus() {
@@ -158,9 +229,13 @@ final class TestViewModel: NSObject, ObservableObject {
         pingAmount = 0
         jitterAmount = 0
         lossAmount = 0
+        downloadSpeed = 0
+        uploadSpeed = 0
+        isTestingStarted = false
     }
 }
 
+// MARK: - CLLocationManagerDelegate
 extension TestViewModel: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }

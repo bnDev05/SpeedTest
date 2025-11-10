@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A354" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="TestResultEntity" representedClassName="TestResultEntity" syncable="YES">
+        <attribute name="connectionType" optional="YES" attributeType="String"/>
+        <attribute name="downloadHistoryData" optional="YES" attributeType="Binary"/>
+        <attribute name="downloadSpeed" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="externalIP" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="internalIP" optional="YES" attributeType="String"/>
+        <attribute name="jitter" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="packetLoss" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ping" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="providerName" optional="YES" attributeType="String"/>
+        <attribute name="serverLocation" optional="YES" attributeType="String"/>
+        <attribute name="serverName" optional="YES" attributeType="String"/>
+        <attribute name="testDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="uploadHistoryData" optional="YES" attributeType="Binary"/>
+        <attribute name="uploadSpeed" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
-    <elements>
-        <element name="Item" positionX="-63" positionY="-18" width="128" height="44"/>
-    </elements>
 </model>

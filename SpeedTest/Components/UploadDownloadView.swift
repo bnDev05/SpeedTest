@@ -12,9 +12,10 @@ struct UploadDownloadView: View {
     var isGreen: Bool = true
     @State private var selectedUnit: String = "Mbit"
     @Binding var speed: Double
+    var isHistoryGiven: Bool = false
     
     // Store historical speed data for the chart
-    @State private var speedHistory: [SpeedDataPoint] = []
+    @State var speedHistory: [SpeedDataPoint] = []
     @State private var maxDataPoints = 30
     
     var body: some View {
@@ -53,9 +54,12 @@ struct UploadDownloadView: View {
                     )
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [
+                            colors: isGreen ? [
                                 Color(hex: "#3ACFB6").opacity(0.45),
                                 Color(hex: "#3ACFB6").opacity(0)
+                            ] : [
+                                Color(hex: "#9359C7").opacity(0.45),
+                                Color(hex: "#9359C7").opacity(0)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
@@ -66,7 +70,7 @@ struct UploadDownloadView: View {
                         x: .value("Time", dataPoint.index),
                         y: .value("Speed", dataPoint.speed)
                     )
-                    .foregroundStyle(Color(hex: "#3ACFB6"))
+                    .foregroundStyle(isGreen ? Color(hex: "#3ACFB6") : Color(hex: "#9359C7"))
                     .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                 }
                 .chartXAxis(.hidden)
@@ -89,8 +93,11 @@ struct UploadDownloadView: View {
             RoundedRectangle(cornerRadius: 22)
                 .foregroundStyle(Color(hex: "#292F38"))
         )
+        .clipShape(RoundedRectangle(cornerRadius: 22))
         .onChange(of: speed) { newSpeed in
-            updateSpeedHistory(newSpeed)
+            if !isHistoryGiven {
+                updateSpeedHistory(newSpeed)
+            }
         }
     }
     
@@ -115,7 +122,7 @@ struct UploadDownloadView: View {
     @Previewable @State var speed: Double = 52.0
     
     VStack(spacing: 20) {
-        UploadDownloadView(isDownload: true, speed: $speed)
+        UploadDownloadView(isDownload: false, isGreen: false, speed: $speed)
             .padding()
         
         // Simulate fluctuating speed
