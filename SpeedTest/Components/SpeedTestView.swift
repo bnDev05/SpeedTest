@@ -86,6 +86,7 @@ struct SpeedTestView: View {
         }
     }
 }
+
 // MARK: - Speedometer View
 struct SpeedometerView: View {
     @Binding var state: SpeedTestState
@@ -93,6 +94,10 @@ struct SpeedometerView: View {
     var isConnected: Bool = true
     var onStart: (() -> Void)
     @State private var showMessage = false
+    
+    // Track previous speed to determine direction
+    @State private var previousSpeed: Double = 0
+    @State private var isSpeedIncreasing: Bool = true
 
     let speedMarks = [
         (value: 0, angle: 150.0),
@@ -185,7 +190,6 @@ struct SpeedometerView: View {
                     }
                     .position(center)
                     
-                    // Speed display at bottom
                     VStack(spacing: 8) {
                         Text(speedText)
                             .font(.poppins(.semibold, size: 48))
@@ -193,10 +197,11 @@ struct SpeedometerView: View {
                             .monospacedDigit()
                         
                         HStack(spacing: 6) {
-                            Image(.pinkUploadIcon) // there when the speed is increasing, we should set that image, if decreasing we should set .greenDownloadIcon
+                            Image(isSpeedIncreasing ? .pinkUploadIcon : .speedDownIcon)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 28, height: 28, alignment: .center)
+                            
                             Text("Mbit/s")
                                 .font(.poppins(.medium, size: 18))
                                 .foregroundColor(Color(hex: "#787F88"))
@@ -205,6 +210,16 @@ struct SpeedometerView: View {
                     .position(x: center.x, y: center.y + radius * 0.9)
                 }
             }
+        }
+        .onChange(of: currentSpeed) { newSpeed in
+            // Update speed direction
+            if newSpeed > previousSpeed {
+                isSpeedIncreasing = true
+            } else if newSpeed < previousSpeed {
+                isSpeedIncreasing = false
+            }
+            
+            previousSpeed = newSpeed
         }
     }
     
@@ -237,7 +252,6 @@ struct SpeedometerView: View {
         return 150 + (currentProgress * 240)
     }
 }
-
 // MARK: - Start Button View
 struct StartButtonView: View {
     let action: () -> Void

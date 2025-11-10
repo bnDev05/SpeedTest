@@ -215,7 +215,7 @@ final class TestViewModel: NSObject, ObservableObject {
         }
         
         serverName = server.provider
-        serverLocationName = "\(server.city), \(server.country)"
+        serverLocationName = "\(server.city)"
         print("📍 Server updated: \(server.name) in \(server.city)")
     }
     
