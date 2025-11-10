@@ -118,7 +118,6 @@ struct SpeedometerView: View {
             let radius: CGFloat = size * 0.42
 
             ZStack {
-                // Background dark arc (unfilled portion)
                 Circle()
                     .trim(from: 0.0, to: 240.0 / 360.0)
                     .stroke(
@@ -128,7 +127,6 @@ struct SpeedometerView: View {
                     .frame(width: radius * 2, height: radius * 2)
                     .rotationEffect(.degrees(150))
 
-                // If idle or finished — show Start Button
                 if state == .idle || state == .complete(speed: speed) {
                     StartButtonView(
                         action: {
@@ -137,15 +135,16 @@ struct SpeedometerView: View {
                         isConnected: isConnected,
                         showMessage: $showMessage
                     )
-                    .position(x: center.x, y: showMessage ? center.y + 60 : center.y)
+                    .position(
+                        x: center.x,
+                        y: showMessage ? center.y + geo.size.height * 0.14 : center.y
+                    )
 
                 } else if case .connecting = state {
-                    // Show connecting animation
                     ConnectingButtonView()
                         .position(x: center.x, y: center.y)
                     
                 } else {
-                    // Progress arc
                     Circle()
                         .trim(from: 0, to: min(currentProgress * (240.0 / 360.0), 240.0 / 360.0))
                         .stroke(
@@ -303,27 +302,29 @@ struct StartButtonView: View {
                         .font(.poppins(.medium, size: 16))
                         .foregroundColor(Color(hex: "#4599F5"))
                         .multilineTextAlignment(.center)
-                        .frame(height: 50)
+                        .frame(height: 45)
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 22)
                                 .fill(Color(hex: "#4599F5").opacity(0.15))
                         )
                         .opacity(messageOpacity)
+                        .padding(.top, -5)
                 } else {
                     Text("Check your connection:\nthe speed test may fail")
                         .font(.poppins(.medium, size: 16))
                         .foregroundColor(Color(hex: "#FF4D6D"))
-                        .frame(height: 50)
+                        .frame(height: 45)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 22)
                                 .fill(Color(red: 0.3, green: 0.1, blue: 0.15))
                         )
                         .opacity(messageOpacity)
+                        .padding(.top, -5)
                 }
             }
         }
@@ -397,9 +398,8 @@ struct ConnectingButtonView: View {
                 .rotationEffect(.degrees(-90)) // Start from bottom (270° = -90°)
                 .animation(.linear(duration: maxTime), value: progress)
             
-            // Connection text
             Text("Connection...")
-                .font(.poppins(.bold, size: 20))
+                .font(.poppins(.bold, size: 16))
                 .foregroundColor(.white)
         }
         .onAppear {
