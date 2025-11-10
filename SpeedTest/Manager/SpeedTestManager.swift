@@ -491,6 +491,7 @@ final class ServerManager: ObservableObject {
 }
 
 // MARK: - Speedtest API Response Models
+// MARK: - Speedtest API Response Models
 struct SpeedtestServerResponse: Codable {
     let url: String
     let lat: Double
@@ -506,5 +507,39 @@ struct SpeedtestServerResponse: Codable {
     enum CodingKeys: String, CodingKey {
         case url, lat, lon, name, country, cc, sponsor, id, host
         case url2 = "url2"
+    }
+    
+    // Custom decoder to handle both String and Double for lat/lon
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        url = try container.decode(String.self, forKey: .url)
+        name = try container.decode(String.self, forKey: .name)
+        country = try container.decode(String.self, forKey: .country)
+        cc = try container.decode(String.self, forKey: .cc)
+        sponsor = try container.decode(String.self, forKey: .sponsor)
+        id = try container.decode(String.self, forKey: .id)
+        host = try container.decode(String.self, forKey: .host)
+        url2 = try? container.decode(String.self, forKey: .url2)
+        
+        // Handle lat - can be String or Double
+        if let latDouble = try? container.decode(Double.self, forKey: .lat) {
+            lat = latDouble
+        } else if let latString = try? container.decode(String.self, forKey: .lat),
+                  let latDouble = Double(latString) {
+            lat = latDouble
+        } else {
+            lat = 0.0
+        }
+        
+        // Handle lon - can be String or Double
+        if let lonDouble = try? container.decode(Double.self, forKey: .lon) {
+            lon = lonDouble
+        } else if let lonString = try? container.decode(String.self, forKey: .lon),
+                  let lonDouble = Double(lonString) {
+            lon = lonDouble
+        } else {
+            lon = 0.0
+        }
     }
 }

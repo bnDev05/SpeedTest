@@ -19,11 +19,28 @@ struct ChangeServerView: View {
             selectAutomaticallyButton
             ScrollView {
                 VStack(spacing: 20) {
-                    ForEach(viewModel.servers, id: \.id) { server in
-                        serverCell(server: server)
-                            .onTapGesture {
-                                viewModel.selectedServer = server
-                            }
+                    if viewModel.isLoading {
+                        ProgressView("Loading servers...")
+                            .foregroundColor(.white)
+                            .padding()
+                    } else if viewModel.filteredServers.isEmpty && !viewModel.servers.isEmpty {
+                        Text("No servers found")
+                            .font(.poppins(.medium, size: 16))
+                            .foregroundColor(Color(hex: "#787F88"))
+                            .padding()
+                    } else if viewModel.servers.isEmpty {
+                        Text("No servers available. Check your connection.")
+                            .font(.poppins(.medium, size: 16))
+                            .foregroundColor(Color(hex: "#787F88"))
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    } else {
+                        ForEach(viewModel.filteredServers, id: \.id) { server in
+                            serverCell(server: server)
+                                .onTapGesture {
+                                    viewModel.selectServer(server)
+                                }
+                        }
                     }
                 }
                 .padding(.top, 2)

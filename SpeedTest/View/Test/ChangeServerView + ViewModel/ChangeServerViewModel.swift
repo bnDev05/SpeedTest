@@ -53,6 +53,7 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         serverManager.$servers
             .receive(on: DispatchQueue.main)
             .sink { [weak self] servers in
+                print("📡 Received \(servers.count) servers in ViewModel")
                 self?.servers = servers
                 self?.updateFilteredServers()
             }
@@ -61,19 +62,30 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
         // Filter servers based on search text
         $searchText
             .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] searchText in
+                print("🔍 Searching for: '\(searchText)'")
                 self?.updateFilteredServers()
             }
             .store(in: &cancellables)
         
         // Update loading state
         serverManager.$isLoading
-            .assign(to: &$isLoading)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                print("⏳ Loading state: \(isLoading)")
+                self?.isLoading = isLoading
+            }
+            .store(in: &cancellables)
         
         // Update selected server when it changes
         serverManager.$selectedServer
             .compactMap { $0 }
-            .assign(to: &$selectedServer)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] server in
+                print("✅ Selected server updated: \(server.name)")
+                self?.selectedServer = server
+            }
+            .store(in: &cancellables)
     }
     
     private func setupLocationManager() {

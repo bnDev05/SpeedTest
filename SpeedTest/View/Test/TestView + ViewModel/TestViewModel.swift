@@ -36,6 +36,16 @@ final class TestViewModel: NSObject, ObservableObject {
         
         // Request location permission
         locationManager.requestWhenInUseAuthorization()
+        
+        // Load servers immediately if we don't have any
+        Task {
+            if serverManager.servers.isEmpty {
+                print("🚀 Loading servers on init...")
+                await serverManager.fetchServers(userLocation: nil)
+            } else {
+                print("✅ Using cached servers: \(serverManager.servers.count)")
+            }
+        }
     }
     
     // MARK: - Setup
