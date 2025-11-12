@@ -16,36 +16,62 @@ struct SignalView: View {
                 topView
                 
                 NetworkDiagnosticsView(action: {
-                    
+                    viewModel.startDiagnostic()
                 }, progressPercentage: $viewModel.overallCompletedPercentage, diagnosticStatus: $viewModel.overallNetworkStatus)
                 .frame(maxHeight: .infinity, alignment: .center)
                 
                 VStack(spacing: 10) {
-                    NetworkItemView(networkStatus: $viewModel.networkSettingsStatus, isNetworkSettings: true, icon: .networkSettingsIcon, title: "Network Settings", subtitle: "Network name")
+                    NetworkItemView(
+                        networkStatus: $viewModel.networkSettingsStatus,
+                        isNetworkSettings: true,
+                        icon: .networkSettingsIcon,
+                        title: "Network Settings",
+                        subtitle: viewModel.networkName
+                    )
                     
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
                     
-                    NetworkItemView(networkStatus: $viewModel.signalStrengthStatus, icon: .signalStrengthIcon, title: "Signal Strength", subtitle: "Normal") // instead of these text, we should set actual condition of checking item
+                    NetworkItemView(
+                        networkStatus: $viewModel.signalStrengthStatus,
+                        icon: .signalStrengthIcon,
+                        title: "Signal Strength",
+                        subtitle: viewModel.signalStrength
+                    )
                     
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
                     
-                    NetworkItemView(networkStatus: $viewModel.dnsStatus, icon: .dnsStatusIcon, title: "DNS Status", subtitle: "Normal") // instead of these text, we should set actual condition of checking item
+                    NetworkItemView(
+                        networkStatus: $viewModel.dnsStatus,
+                        icon: .dnsStatusIcon,
+                        title: "DNS Status",
+                        subtitle: viewModel.dnsStatusText
+                    )
                     
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
                     
-                    NetworkItemView(networkStatus: $viewModel.internetConnectionStatus, icon: .internetConnectionStatusIcon, title: "Internet Connection", subtitle: "Normal") // instead of these text, we should set actual condition of checking item
+                    NetworkItemView(
+                        networkStatus: $viewModel.internetConnectionStatus,
+                        icon: .internetConnectionStatusIcon,
+                        title: "Internet Connection",
+                        subtitle: viewModel.internetConnectionText
+                    )
                     
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
                     
-                    NetworkItemView(networkStatus: $viewModel.serverConnectionStatus, icon: .serverConnectionIcon, title: "Server Connection", subtitle: "Normal") // instead of these text, we should set actual condition of checking item
+                    NetworkItemView(
+                        networkStatus: $viewModel.serverConnectionStatus,
+                        icon: .serverConnectionIcon,
+                        title: "Server Connection",
+                        subtitle: viewModel.serverConnectionText
+                    )
                 }
                 .padding(.horizontal, 18)
                 .padding(.vertical, 15)
@@ -53,10 +79,18 @@ struct SignalView: View {
                     RoundedRectangle(cornerRadius: 22)
                         .foregroundStyle(Color(hex: "#292F38"))
                 )
+                .padding(.bottom)
             }
             .padding(.horizontal)
         }
         .navigationBarBackButtonHidden()
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(
+                title: Text(viewModel.alertTitle),
+                message: Text(viewModel.alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
     
     private var topView: some View {
@@ -67,7 +101,7 @@ struct SignalView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.overallNetworkStatus == 2 {
                 Button {
-                    
+                    viewModel.restartDiagnostic()
                 } label: {
                     Image(.retestServerButton)
                         .resizable()
@@ -128,10 +162,10 @@ struct NetworkItemView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 46, height: 46)
+                    .padding(.trailing, -8)
             }
         }
         .frame(height: 46)
-        // If status changes dynamically (e.g. from 1→2), stop rotation automatically
         .onChange(of: networkStatus) { newValue in
             if newValue == 1 {
                 startRotation()
@@ -140,9 +174,7 @@ struct NetworkItemView: View {
             }
         }
     }
-    
-    // MARK: - Rotation helpers
-    
+        
     private func startRotation() {
         withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
             rotationAngle = -360

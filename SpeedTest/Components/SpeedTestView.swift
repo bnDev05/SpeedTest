@@ -336,42 +336,49 @@ struct NetworkDiagnosticsView: View {
     @Binding var diagnosticStatus: Int// 0 for start, 1 during diagnostics and 2 for finish
     
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(LinearGradient(
-                    colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
-                    startPoint: .top,
-                    endPoint: .bottom
-                ))
-                .shadow(
-                    color: Color(hex: "#00D37F").opacity(0.4),
-                    radius: 76,
-                    x: 0,
-                    y: 0
-                )
-                .frame(width: 180, height: 180)
-            
-            Circle()
-                .stroke(
-                    Color(hex: "#292F38"),
-                    lineWidth: 13
-                )
-                .frame(width: 167, height: 167)
-            
-            Circle()
-                .trim(from: 0, to: CGFloat(progressPercentage) / 100.0)
-                .stroke(
-                    Color(hex: "#00D37F"),
-                    style: StrokeStyle(lineWidth: 13, lineCap: .round)
-                )
-                .frame(width: 167, height: 167)
-                .rotationEffect(.degrees(90))
-                .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
-            
-            Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready"))
-                .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
-                .foregroundColor(.white)
+        Button {
+            if diagnosticStatus == 0 {
+                action()
+            }
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient(
+                        colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ))
+                    .shadow(
+                        color: Color(hex: "#00D37F").opacity(0.4),
+                        radius: 76,
+                        x: 0,
+                        y: 0
+                    )
+                    .frame(width: 180, height: 180)
+                
+                Circle()
+                    .stroke(
+                        Color(hex: "#292F38"),
+                        lineWidth: 13
+                    )
+                    .frame(width: 167, height: 167)
+                
+                Circle()
+                    .trim(from: 0, to: CGFloat(progressPercentage) / 100.0)
+                    .stroke(
+                        Color(hex: "#00D37F"),
+                        style: StrokeStyle(lineWidth: 13, lineCap: .round)
+                    )
+                    .frame(width: 167, height: 167)
+                    .rotationEffect(.degrees(90))
+                    .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
+                
+                Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready"))
+                    .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
+                    .foregroundColor(.white)
+            }
         }
+        .disabled(diagnosticStatus != 0)
     }
 }
 
