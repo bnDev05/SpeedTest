@@ -301,6 +301,9 @@ final class TestViewModel: NSObject, ObservableObject {
     }
     
     private func navigateToResults() {
+        lossAmount = 0
+        pingAmount = 0
+        jitterAmount = 0
         guard let results = testResults else { return }
         let resultView = ResultView(testResults: results)
         NavigationManager.shared.push(resultView)

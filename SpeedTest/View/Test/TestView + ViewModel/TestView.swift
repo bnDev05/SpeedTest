@@ -131,7 +131,7 @@ struct TestView: View {
     private var uploadDownloadView: some View {
         HStack(spacing: 10) {
             UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
-            UploadDownloadView(isDownload: false, isGreen: false, speed: $viewModel.uploadSpeed)
+            UploadDownloadView(isDownload: false, isGreen: true, speed: $viewModel.uploadSpeed)
         }
     }
 }

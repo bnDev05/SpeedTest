@@ -30,29 +30,9 @@ struct SpeedTestView: View {
                 
                 Spacer()
                 
-                // Button below
-                if case .connecting = currentState {
-                    ConnectingButtonView()
-                } else if case .testing = currentState {
-                    TestingButtonView()
-                } else if case .error(let message) = currentState {
-                    VStack(spacing: 16) {
-                        ErrorButtonView(action: startTest)
-                        
-                        Text(message)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                            .padding(.vertical, 10)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color(red: 0.2, green: 0.15, blue: 0.15))
-                            )
-                    }
-                } else {
-                    StartButtonView(action: startTest, isConnected: isConnected, showMessage: .constant(true))
-                }
+                NetworkDiagnosticsView(action: {
+                    
+                }, progressPercentage: .constant(70), diagnosticStatus: .constant(1))
                 
                 Spacer()
             }
@@ -95,6 +75,7 @@ struct SpeedometerView: View {
     var onStart: (() -> Void)
     @State private var showMessage = false
     @Binding var isDownloadSpeed: Bool
+    @State private var messageOpacity: Double = 0
 
     let speedMarks = [
         (value: 0, angle: 150.0),
@@ -125,17 +106,54 @@ struct SpeedometerView: View {
                     .rotationEffect(.degrees(150))
 
                 if state == .idle || state == .complete(speed: speed) {
-                    StartButtonView(
-                        action: {
-                            onStart()
-                        },
-                        isConnected: isConnected,
-                        showMessage: $showMessage
-                    )
-                    .position(
-                        x: center.x,
-                        y: showMessage ? center.y + geo.size.height * 0.14 : center.y
-                    )
+                    VStack(spacing: 0) {
+                        StartButtonView(
+                            action: {
+                                onStart()
+                            },
+                            isConnected: isConnected,
+                            showMessage: $showMessage
+                        )
+                        .onAppear {
+                            showMessageWithFade()
+                        }
+                        .position(
+                            x: center.x,
+                            y: showMessage ? center.y  : center.y
+                        )
+                        
+                        if showMessage {
+                            if isConnected {
+                                Text("You are connected \nto the Internet")
+                                    .font(.poppins(.medium, size: 16))
+                                    .foregroundColor(Color(hex: "#4599F5"))
+                                    .multilineTextAlignment(.center)
+                                    .frame(height: 45)
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 22)
+                                            .fill(Color(hex: "#4599F5").opacity(0.15))
+                                    )
+                                    .opacity(messageOpacity)
+                                    .padding(.top, -10)
+                            } else {
+                                Text("Check your connection:\nthe speed test may fail")
+                                    .font(.poppins(.medium, size: 16))
+                                    .foregroundColor(Color(hex: "#FF4D6D"))
+                                    .frame(height: 45)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 40)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 22)
+                                            .fill(Color(red: 0.3, green: 0.1, blue: 0.15))
+                                    )
+                                    .opacity(messageOpacity)
+                                    .padding(.top, -10)
+                            }
+                        }
+                    }
 
                 } else if case .connecting = state {
                     ConnectingButtonView()
@@ -215,6 +233,24 @@ struct SpeedometerView: View {
         }
     }
     
+    private func showMessageWithFade() {
+        showMessage = true
+        
+        withAnimation(.easeIn(duration: 0.3)) {
+            messageOpacity = 1.0
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            withAnimation(.easeOut(duration: 0.5)) {
+                messageOpacity = 0
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                showMessage = false
+            }
+        }
+    }
+    
     // MARK: - Computed properties
     private var currentSpeed: Double {
         switch state {
@@ -289,58 +325,52 @@ struct StartButtonView: View {
             }
             .buttonStyle(PlainButtonStyle())
         
-            if showMessage {
-                if isConnected {
-                    Text("You are connected \nto the Internet")
-                        .font(.poppins(.medium, size: 16))
-                        .foregroundColor(Color(hex: "#4599F5"))
-                        .multilineTextAlignment(.center)
-                        .frame(height: 45)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 22)
-                                .fill(Color(hex: "#4599F5").opacity(0.15))
-                        )
-                        .opacity(messageOpacity)
-                        .padding(.top, -5)
-                } else {
-                    Text("Check your connection:\nthe speed test may fail")
-                        .font(.poppins(.medium, size: 16))
-                        .foregroundColor(Color(hex: "#FF4D6D"))
-                        .frame(height: 45)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 22)
-                                .fill(Color(red: 0.3, green: 0.1, blue: 0.15))
-                        )
-                        .opacity(messageOpacity)
-                        .padding(.top, -5)
-                }
-            }
-        }
-        .onAppear {
-            showMessageWithFade()
         }
     }
+}
+
+
+struct NetworkDiagnosticsView: View {
+    let action: () -> Void
+    @Binding var progressPercentage: Int
+    @Binding var diagnosticStatus: Int// 0 for start, 1 during diagnostics and 2 for finish
     
-    private func showMessageWithFade() {
-        showMessage = true
-        
-        withAnimation(.easeIn(duration: 0.3)) {
-            messageOpacity = 1.0
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            withAnimation(.easeOut(duration: 0.5)) {
-                messageOpacity = 0
-            }
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(LinearGradient(
+                    colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
+                    startPoint: .top,
+                    endPoint: .bottom
+                ))
+                .shadow(
+                    color: Color(hex: "#00D37F").opacity(0.4),
+                    radius: 76,
+                    x: 0,
+                    y: 0
+                )
+                .frame(width: 180, height: 180)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                showMessage = false
-            }
+            Circle()
+                .stroke(
+                    Color(hex: "#292F38"),
+                    lineWidth: 13
+                )
+                .frame(width: 167, height: 167)
+            
+            Circle()
+                .trim(from: 0, to: CGFloat(progressPercentage) / 100.0)
+                .stroke(
+                    Color(hex: "#00D37F"),
+                    style: StrokeStyle(lineWidth: 13, lineCap: .round)
+                )
+                .frame(width: 167, height: 167)
+                .rotationEffect(.degrees(90))
+                .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
+            
+            Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready"))
+                .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
+                .foregroundColor(.white)
         }
     }
 }
@@ -353,7 +383,6 @@ struct ConnectingButtonView: View {
     
     var body: some View {
         ZStack {
-            // Background circle with gradient and shadow
             Circle()
                 .fill(LinearGradient(
                     colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
@@ -368,7 +397,6 @@ struct ConnectingButtonView: View {
                 )
                 .frame(width: 140, height: 140)
             
-            // Static background ring
             Circle()
                 .stroke(
                     Color(hex: "#292F38"),
@@ -376,7 +404,6 @@ struct ConnectingButtonView: View {
                 )
                 .frame(width: 140, height: 140)
             
-            // Animated progress ring
             Circle()
                 .trim(from: 0, to: progress)
                 .stroke(
@@ -388,7 +415,7 @@ struct ConnectingButtonView: View {
                     style: StrokeStyle(lineWidth: 10, lineCap: .round)
                 )
                 .frame(width: 140, height: 140)
-                .rotationEffect(.degrees(-90)) // Start from bottom (270° = -90°)
+                .rotationEffect(.degrees(90))
                 .animation(.linear(duration: maxTime), value: progress)
             
             Text("Connection...")
@@ -396,7 +423,6 @@ struct ConnectingButtonView: View {
                 .foregroundColor(.white)
         }
         .onAppear {
-            // Animate progress from 0 to 1 over maxTime seconds
             withAnimation(.linear(duration: maxTime)) {
                 progress = 1.0
             }
