@@ -39,7 +39,7 @@ struct SettingsView: View {
                         }
                         
                         Button {
-                            
+                            NavigationManager.shared.present(SubscriptionView(), isFullScreenCover: false, isCrossDissolve: false)
                         } label: {
                             settingsCell(icon: .settingsSubscriptionPlansIcon, title: "Subscription plans", unitString: nil)
                         }
@@ -52,7 +52,7 @@ struct SettingsView: View {
                         }
                         
                         Button {
-                            
+                            NavigationManager.shared.push(FAQView())
                         } label: {
                             settingsCell(icon: .settingsReplaceIconImace, title: "FAQ", unitString: nil)
                         }
@@ -102,29 +102,6 @@ struct SettingsView: View {
                 .zIndex(1)
             }
         }
-//        .alert(isUnit ? "Select a unit of measurement" : "Dial scale", isPresented: $presentAlert) {
-//            Button(isUnit ? "Mbit/s" : "1000") {
-//                if isUnit {
-//                    unit = 0
-//                } else {
-//                    dialScale = 0
-//                }
-//            }
-//            Button(isUnit ? "MB/s" : "500") {
-//                if isUnit {
-//                    unit = 1
-//                } else {
-//                    dialScale = 1
-//                }
-//            }
-//            Button(isUnit ? "KB/s" : "100") {
-//                if isUnit {
-//                    unit = 2
-//                } else {
-//                    dialScale = 2
-//                }
-//            }
-//        }
         .toolbar(showIconsSwitch ? .hidden : .visible, for: .tabBar)
         .navigationBarBackButtonHidden()
     }
@@ -293,5 +270,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(tabAppears: .constant(true))
+    NavigationView {
+        SettingsView(tabAppears: .constant(true))
+    }
 }
