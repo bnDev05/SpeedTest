@@ -298,6 +298,9 @@ final class TestViewModel: NSObject, ObservableObject {
             externalIP: externalIP,
             testDate: Date()
         )
+        if let testResults {
+            TestResultEntity.create(from: testResults)
+        }
     }
     
     private func navigateToResults() {

@@ -276,7 +276,7 @@ final class SignalViewModel: ObservableObject {
         
         let startValue = overallCompletedPercentage
         let increment = target - startValue
-        let steps = Int(duration * 30) // 30 updates per second for smooth animation
+        let steps = Int(duration * 30) 
         let stepIncrement = Double(increment) / Double(steps)
         var currentStep = 0
         

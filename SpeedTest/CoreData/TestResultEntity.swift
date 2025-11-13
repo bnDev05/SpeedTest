@@ -91,6 +91,23 @@ extension TestResultEntity {
         self.testDate = testResults.testDate
     }
     
+    @discardableResult
+    static func create(from testResults: TestResults) -> TestResultEntity? {
+        let context = PersistenceController.shared.container.viewContext
+        let entity = TestResultEntity(context: context)
+        entity.update(from: testResults)
+        
+        do {
+            try context.save()
+            print("✅ Saved new TestResultEntity for test at \(entity.testDate?.formatted() ?? "Unknown date")")
+            return entity
+        } catch {
+            print("❌ Failed to save TestResultEntity: \(error.localizedDescription)")
+            context.rollback()
+            return nil
+        }
+    }
+    
     // Convert from TestResultEntity to TestResults
     func toTestResults() -> TestResults {
         return TestResults(
@@ -109,6 +126,38 @@ extension TestResultEntity {
             externalIP: self.externalIP ?? "N/A",
             testDate: self.testDate ?? Date()
         )
+    }
+    
+    static func delete(_ entity: TestResultEntity) {
+        let context = PersistenceController.shared.container.viewContext
+        context.delete(entity)
+        
+        do {
+            try context.save()
+            print("🗑️ Deleted TestResultEntity (id: \(entity.id?.uuidString ?? "nil"))")
+        } catch {
+            print("❌ Failed to delete TestResultEntity: \(error.localizedDescription)")
+            context.rollback()
+        }
+    }
+    
+    static func fetchAll(
+        sortedByDate: Bool = true
+    ) -> [TestResultEntity] {
+        let context = PersistenceController.shared.container.viewContext
+        let request: NSFetchRequest<TestResultEntity> = TestResultEntity.fetchRequest()
+        
+        if sortedByDate {
+            let sortDescriptor = NSSortDescriptor(key: #keyPath(TestResultEntity.testDate), ascending: false)
+            request.sortDescriptors = [sortDescriptor]
+        }
+        
+        do {
+            return try context.fetch(request)
+        } catch {
+            print("⚠️ Failed to fetch TestResultEntity: \(error.localizedDescription)")
+            return []
+        }
     }
 }
 

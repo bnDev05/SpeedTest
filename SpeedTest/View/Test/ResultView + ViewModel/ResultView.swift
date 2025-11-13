@@ -8,6 +8,7 @@ struct ResultView: View {
     @State private var watchVideosRating: Int = 0
     @State private var playGamesRating: Int = 0
     @State private var uploadPhotosRating: Int = 0
+    @State var action: (() -> Void)?
 
     var body: some View {
         ZStack {
@@ -240,6 +241,9 @@ struct ResultView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             NotificationCenter.default.post(name: NSNotification.Name("StartSpeedTest"), object: nil)
+        }
+        if let action {
+            action()
         }
     }
 }

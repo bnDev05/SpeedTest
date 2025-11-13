@@ -3,52 +3,55 @@ import SwiftUI
 
 struct TabView: View {
     @State private var selection: Tabs = .test
-    
+    @State private var tabAppears: Bool = true
+
     var body: some View {
         VStack(spacing: 0) {
             TabContent(selection)
             
-            if #available(iOS 26.0, *) {
-                HStack(spacing: 0) {
-                    ForEach(Tabs.allCases) { tab in
-                        TabButton(
-                            tab: tab,
-                            isSelected: selection == tab
-                        ) {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                selection = tab
+            if tabAppears {
+                if #available(iOS 26.0, *) {
+                    HStack(spacing: 0) {
+                        ForEach(Tabs.allCases) { tab in
+                            TabButton(
+                                tab: tab,
+                                isSelected: selection == tab
+                            ) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    selection = tab
+                                }
                             }
                         }
                     }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .background(Color(hex: "040A15").overlay(content: {
-                    Color.white.opacity(0.12)
-                }))
-                .glassEffect()
-                .clipShape(Capsule())
-                .padding(.horizontal, 15)
-            } else {
-                HStack(spacing: 0) {
-                    ForEach(Tabs.allCases) { tab in
-                        TabButton(
-                            tab: tab,
-                            isSelected: selection == tab
-                        ) {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                selection = tab
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                    .background(Color(hex: "040A15").overlay(content: {
+                        Color.white.opacity(0.12)
+                    }))
+                    .glassEffect()
+                    .clipShape(Capsule())
+                    .padding(.horizontal, 15)
+                } else {
+                    HStack(spacing: 0) {
+                        ForEach(Tabs.allCases) { tab in
+                            TabButton(
+                                tab: tab,
+                                isSelected: selection == tab
+                            ) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    selection = tab
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                    .background(Color(hex: "040A15").overlay(content: {
+                        Color.white.opacity(0.12)
+                    }))
+                    .clipShape(Capsule())
+                    .padding(.horizontal, 15)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .background(Color(hex: "040A15").overlay(content: {
-                    Color.white.opacity(0.12)
-                }))
-                .clipShape(Capsule())
-                .padding(.horizontal, 15)
             }
         }
         .background(Color(hex: "#040A15"))
@@ -59,8 +62,8 @@ struct TabView: View {
         switch tab {
         case .test: TestView()
         case .signal: SignalView()
-        case .history: HistoryView()
-        case .settings: SettingsView()
+        case .history: HistoryView(currentTab: $selection)
+        case .settings: SettingsView(tabAppears: $tabAppears)
         }
     }
 }
