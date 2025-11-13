@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import Charts
 
 struct SpeedDataPoint: Identifiable {
@@ -10,13 +11,28 @@ struct SpeedDataPoint: Identifiable {
 struct UploadDownloadView: View {
     let isDownload: Bool
     var isGreen: Bool = true
-    @State private var selectedUnit: String = "Mbit"
     @Binding var speed: Double
     var isHistoryGiven: Bool = false
     
     // Store historical speed data for the chart
     @State var speedHistory: [SpeedDataPoint] = []
     @State private var maxDataPoints = 20
+    
+    // Dynamic unit from user settings
+    @AppStorage("unit") private var unit: Int = 0
+    @State private var selectedUnit: SpeedUnit = .mbitPerSec
+    @State private var displayedSpeed: String = "0.0"
+    @State private var displayedUnit: String = "Mbit"
+    
+    var cancellables = Set<AnyCancellable>()
+    
+    init(isDownload: Bool, isGreen: Bool = true, speed: Binding<Double>, isHistoryGiven: Bool = false, speedHistory: [SpeedDataPoint] = []) {
+        self.isDownload = isDownload
+        self.isGreen = isGreen
+        self._speed = speed
+        self.isHistoryGiven = isHistoryGiven
+        self.speedHistory = speedHistory
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -34,18 +50,18 @@ struct UploadDownloadView: View {
             .padding(.top, 24)
 
             HStack(alignment: .bottom) {
-                Text(String(format: "%.0f", speed))
+                Text(displayedSpeed)
                     .foregroundStyle(.white)
                     .font(.poppins(.semibold, size: 24))
                 
-                Text("\(selectedUnit)/s")
+                Text("\(displayedUnit)")
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.semibold, size: 16))
             }
             .padding(.horizontal, 16)
             .padding(.top, 4)
             
-            // Chart
+            // Chart stays identical
             if !speedHistory.isEmpty {
                 Chart(speedHistory) { dataPoint in
                     AreaMark(
@@ -80,7 +96,6 @@ struct UploadDownloadView: View {
                 .frame(height: 41)
                 .padding(.bottom, 8)
             } else {
-                // Placeholder when no data
                 Rectangle()
                     .fill(Color.clear)
                     .frame(height: 41)
@@ -95,48 +110,41 @@ struct UploadDownloadView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .onChange(of: speed) { newSpeed in
-            // Only update history if we're not given a pre-populated history
+            updateDisplayedSpeed(newSpeed)
+            
             if !isHistoryGiven {
                 updateSpeedHistory(newSpeed)
             }
         }
+        .onChange(of: unit) { _ in
+            updateUnit()
+            updateDisplayedSpeed(speed)
+        }
+        .onAppear {
+            updateUnit()
+            updateDisplayedSpeed(speed)
+        }
     }
     
     private func updateSpeedHistory(_ newSpeed: Double) {
-        // Add new data point
         let newIndex = speedHistory.isEmpty ? 0 : (speedHistory.last?.index ?? 0) + 1
         speedHistory.append(SpeedDataPoint(index: newIndex, speed: newSpeed))
         
-        // Keep only the last N data points
         if speedHistory.count > maxDataPoints {
             speedHistory.removeFirst()
-            
-            // Reindex to keep the chart flowing smoothly
             speedHistory = speedHistory.enumerated().map { index, point in
                 SpeedDataPoint(index: index, speed: point.speed)
             }
         }
     }
-}
-
-#Preview {
-    @Previewable @State var speed: Double = 52.0
     
-    VStack(spacing: 20) {
-        UploadDownloadView(isDownload: false, isGreen: false, speed: $speed)
-            .padding()
-        
-        // Simulate fluctuating speed
-        Button("Simulate Speed Change") {
-            speed = Double.random(in: 20...80)
-        }
-        .padding()
+    private func updateUnit() {
+        selectedUnit = SpeedUnit(rawValue: unit) ?? .mbitPerSec
+        displayedUnit = selectedUnit.displayName
     }
-    .background(Color(hex: "#040A15"))
-    .onAppear {
-        // Auto-simulate speed changes for preview
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            speed = Double.random(in: 20...80)
-        }
+    
+    private func updateDisplayedSpeed(_ newSpeed: Double) {
+        let converted = SpeedConverter.shared.convertSpeed(newSpeed, to: selectedUnit)
+        displayedSpeed = String(format: "%.1f", converted)
     }
 }

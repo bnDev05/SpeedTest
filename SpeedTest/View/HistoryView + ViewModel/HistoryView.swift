@@ -82,15 +82,15 @@ struct HistoryView: View {
                 }))
             } label: {
                 VStack(spacing: 18) {
-                    cellInfo(icon: .pingHistory, title: "Ping", amount: Int(item.ping))
+                    cellInfo(icon: .pingHistory, title: "Ping", speedInMbit: Double(item.ping), viewModel: viewModel)
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
-                    cellInfo(icon: .greenDownloadIcon, title: "Download", amount: Int(item.downloadSpeed))
+                    cellInfo(icon: .greenDownloadIcon, title: "Download", speedInMbit: item.downloadSpeed, viewModel: viewModel)
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
-                    cellInfo(icon: .pinkUploadIcon, title: "Upload", amount: Int(item.uploadSpeed))
+                    cellInfo(icon: .pinkUploadIcon, title: "Upload", speedInMbit: item.uploadSpeed, viewModel: viewModel)
 
                 }
                 .padding(18)
@@ -103,23 +103,35 @@ struct HistoryView: View {
     }
     
     @ViewBuilder
-    private func cellInfo(icon: ImageResource, title: String, amount: Int) -> some View {
+    func cellInfo(
+        icon: ImageResource,
+        title: String,
+        speedInMbit: Double,
+        viewModel: HistoryViewModel
+    ) -> some View {
         HStack(spacing: 12) {
             Image(icon)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30, height: 30, alignment: .center)
+            
             Text(title)
                 .font(.onest(.semibold, size: 18))
                 .foregroundStyle(.white)
+            
             Spacer()
-            Text("\(amount)")
+            
+            // Convert and display speed
+            Text(viewModel.formatSpeed(speedInMbit))
                 .font(.poppins(.semibold, size: 18))
                 .foregroundStyle(.white)
+            
+            // Display current unit
             Text(viewModel.unitAmount)
                 .font(.poppins(.semibold, size: 18))
                 .foregroundStyle(Color(hex: "#787F88"))
                 .padding(.leading, -6)
+            
             Image(systemName: "chevron.right")
                 .resizable()
                 .scaledToFit()
@@ -127,6 +139,12 @@ struct HistoryView: View {
                 .fontWeight(.bold)
                 .foregroundStyle(Color(hex: "#787F88"))
         }
+        .frame(height: 30)
+//        .padding(18)
+//        .background(
+//            RoundedRectangle(cornerRadius: 24)
+//                .foregroundStyle(Color(hex: "#292F38"))
+//        )
     }
     
     func formattedShort(date: Date) -> String {

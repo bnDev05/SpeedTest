@@ -43,12 +43,6 @@ class NavigationManager: NSObject {
         NavigationManager.shared.topViewController?.present(hostingController, animated: true)
     }
     
-//    func showRateView() {
-//        let hostingController = UIHostingController(rootView: RateAppView())
-//        hostingController.modalPresentationStyle = .overFullScreen
-//        NavigationManager.shared.topViewController?.present(hostingController, animated: true)
-//    }
-    
     func push<Content: View>(_ content: Content) {
         let hostingController = UIHostingController(rootView: content)
         navigationController?.pushViewController(hostingController, animated: true)

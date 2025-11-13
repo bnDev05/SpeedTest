@@ -13,9 +13,7 @@ struct RateAppView: View {
                 content
             }
             .ignoresSafeArea()
-            .background(.clear)
         }
-        .background(.clear)
     }
     
     private var back: some View {

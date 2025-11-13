@@ -3,11 +3,12 @@ import SwiftUI
 struct ResultView: View {
     @State var testResults: TestResults
     @Environment(\.dismiss) private var dismiss
-    @State private var byAverageValue: Double = 9.2
+    @State private var byAverageValue: Double = 0.0
     
     @State private var watchVideosRating: Int = 0
     @State private var playGamesRating: Int = 0
     @State private var uploadPhotosRating: Int = 0
+    @State private var showRateApp = false
     @State var action: (() -> Void)?
 
     var body: some View {
@@ -26,6 +27,7 @@ struct ResultView: View {
                 }
             }
             .padding(.horizontal, 18)
+            
         }
         .overlay(alignment: .bottom, content: {
             retryTestView
@@ -35,13 +37,17 @@ struct ResultView: View {
                         .ignoresSafeArea()
                         .foregroundStyle(LinearGradient(colors: [.clear, Color(hex: "#040A15")], startPoint: .top, endPoint: .bottom))
                 )
+            if showRateApp {
+                RateAppView(isRateApp: $showRateApp)
+            }
         })
         .navigationBarBackButtonHidden()
         .onAppear {
             watchVideosRating = testResults.watchVideosRating
             playGamesRating = testResults.playGamesRating
             uploadPhotosRating = testResults.uploadPhotosRating
-            
+            showRateApp = true
+            byAverageValue = TestResultEntity.averageBandwidth()
             print("📊 Download history count: \(testResults.downloadHistory.count)")
             print("📊 Upload history count: \(testResults.uploadHistory.count)")
         }

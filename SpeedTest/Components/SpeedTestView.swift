@@ -14,6 +14,8 @@ enum SpeedTestState: Equatable {
 struct SpeedTestView: View {
     @State private var currentState: SpeedTestState = .idle
     @Binding var speed: Double
+
+    
     var body: some View {
         ZStack {
             Color.black
@@ -23,16 +25,23 @@ struct SpeedTestView: View {
                 Spacer()
                 
                 // Main speedometer
-                SpeedometerView(state: $currentState, speed: $speed, onStart: {
-                    startTest()
-                }, isDownloadSpeed: .constant(true))
-                    .frame(width: 350, height: 350)
+                SpeedometerView(
+                    state: $currentState,
+                    speed: $speed,
+                    onStart: {
+                        startTest()
+                    },
+                    isDownloadSpeed: .constant(true)
+                )
+                .frame(width: 350, height: 350)
                 
                 Spacer()
                 
-                NetworkDiagnosticsView(action: {
-                    
-                }, progressPercentage: .constant(70), diagnosticStatus: .constant(1))
+                NetworkDiagnosticsView(
+                    action: {},
+                    progressPercentage: .constant(70),
+                    diagnosticStatus: .constant(1)
+                )
                 
                 Spacer()
             }
@@ -40,7 +49,6 @@ struct SpeedTestView: View {
     }
     
     private var isConnected: Bool {
-        // Simulating connection check - in real app, check actual connectivity
         return Bool.random()
     }
     
@@ -76,19 +84,12 @@ struct SpeedometerView: View {
     @State private var showMessage = false
     @Binding var isDownloadSpeed: Bool
     @State private var messageOpacity: Double = 0
-
-    let speedMarks = [
-        (value: 0, angle: 150.0),
-        (value: 10, angle: 170.0),
-        (value: 20, angle: 190.0),
-        (value: 50, angle: 220.0),
-        (value: 100, angle: 260.0),
-        (value: 200, angle: 300.0),
-        (value: 300, angle: 330.0),
-        (value: 600, angle: 360.0),
-        (value: 1000, angle: 390.0)
-    ]
+    @AppStorage("unit") private var unit: Int = 0
+    @AppStorage("dialScale") private var dialScale: Int = 0
     
+    @State private var selectedUnit: SpeedUnit = .mbitPerSec
+    @State private var selectedDialScale: DialScale = .scale1000
+
     var body: some View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
@@ -119,7 +120,7 @@ struct SpeedometerView: View {
                         }
                         .position(
                             x: center.x,
-                            y: showMessage ? center.y  : center.y
+                            y: showMessage ? center.y : center.y
                         )
                         
                         if showMessage {
@@ -165,16 +166,16 @@ struct SpeedometerView: View {
                         .stroke(
                             AngularGradient(
                                 gradient: Gradient(colors:
-                                                    isDownloadSpeed ?
-                                                    [
-                                                        Color(hex: "#71F681"),
-                                                        Color(hex: "#03A9EB")
-                                                    ] :
-                                                    [
-                                                        Color(hex: "#F472AE"),
-                                                        Color(hex: "#7652D0")
-                                                    ]
-                                                  ),
+                                    isDownloadSpeed ?
+                                    [
+                                        Color(hex: "#71F681"),
+                                        Color(hex: "#03A9EB")
+                                    ] :
+                                    [
+                                        Color(hex: "#F472AE"),
+                                        Color(hex: "#7652D0")
+                                    ]
+                                ),
                                 center: .center,
                                 startAngle: .degrees(0),
                                 endAngle: .degrees(240)
@@ -185,15 +186,15 @@ struct SpeedometerView: View {
                         .rotationEffect(.degrees(150))
                         .animation(.easeOut(duration: 0.3), value: currentProgress)
                     
-                    // Speed number labels
-                    ForEach(speedMarks, id: \.value) { mark in
+                    // Speed number labels based on dial scale
+                    ForEach(selectedDialScale.getSpeedMarks(), id: \.value) { mark in
                         let radian = mark.angle * .pi / 180
                         let labelRadius = radius * 0.78
                         let x = center.x + labelRadius * cos(radian)
                         let y = center.y + labelRadius * sin(radian)
                         
                         Text("\(mark.value)")
-                            .font(.poppins(.medium, size: 14))
+                            .font(.poppins(.medium, size: mark.value >= 1000 ? 12 : 14))
                             .foregroundColor(.white)
                             .position(x: x, y: y)
                     }
@@ -222,7 +223,7 @@ struct SpeedometerView: View {
                                 .scaledToFit()
                                 .frame(width: 28, height: 28, alignment: .center)
                             
-                            Text("Mbit/s")
+                            Text(selectedUnit.displayName)
                                 .font(.poppins(.medium, size: 18))
                                 .foregroundColor(Color(hex: "#787F88"))
                         }
@@ -230,6 +231,10 @@ struct SpeedometerView: View {
                     .position(x: center.x, y: center.y + radius * 0.9)
                 }
             }
+        }
+        .onAppear {
+            selectedUnit = SpeedUnit(rawValue: unit) ?? .mbitPerSec
+            selectedDialScale = DialScale(rawValue: dialScale) ?? .scale1000
         }
     }
     
@@ -262,24 +267,22 @@ struct SpeedometerView: View {
     
     private var speedText: String {
         if case .idle = state { return "0.00" }
-        return String(format: "%.2f", currentSpeed)
+        // Always show actual converted value, even if it exceeds dial scale
+        let convertedSpeed = SpeedConverter.shared.convertSpeed(currentSpeed, to: selectedUnit)
+        return String(format: "%.2f", convertedSpeed)
     }
     
     private var currentProgress: Double {
-        let speed = currentSpeed
-        if speed <= 0 { return 0 }
-        else if speed <= 10 { return speed / 10 * 0.1 }
-        else if speed <= 50 { return 0.1 + (speed - 10) / 40 * 0.2 }
-        else if speed <= 100 { return 0.3 + (speed - 50) / 50 * 0.2 }
-        else if speed <= 300 { return 0.5 + (speed - 100) / 200 * 0.25 }
-        else if speed <= 1000 { return 0.75 + (speed - 300) / 700 * 0.25 }
-        return 1.0
+        // Use converted speed for dial position, but clamp it to dial scale max
+        let convertedSpeed = SpeedConverter.shared.convertSpeed(currentSpeed, to: selectedUnit)
+        return selectedDialScale.calculateProgress(for: convertedSpeed)
     }
     
     private var needleAngle: Double {
         return 150 + (currentProgress * 240)
     }
 }
+
 // MARK: - Start Button View
 struct StartButtonView: View {
     let action: () -> Void
@@ -324,16 +327,14 @@ struct StartButtonView: View {
                 }
             }
             .buttonStyle(PlainButtonStyle())
-        
         }
     }
 }
 
-
 struct NetworkDiagnosticsView: View {
     let action: () -> Void
     @Binding var progressPercentage: Int
-    @Binding var diagnosticStatus: Int// 0 for start, 1 during diagnostics and 2 for finish
+    @Binding var diagnosticStatus: Int
     
     var body: some View {
         Button {
@@ -386,7 +387,7 @@ struct NetworkDiagnosticsView: View {
 struct ConnectingButtonView: View {
     @State private var progress: CGFloat = 0
     @State private var rotationDegrees: Double = 0
-    let maxTime: Double = 5.0 // max time in seconds
+    let maxTime: Double = 5.0
     
     var body: some View {
         ZStack {

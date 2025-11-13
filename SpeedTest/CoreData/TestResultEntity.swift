@@ -108,6 +108,20 @@ extension TestResultEntity {
         }
     }
     
+    static func averageBandwidth() -> Double {
+        let entities = fetchAll(sortedByDate: false)
+        guard !entities.isEmpty else { return 0 }
+        
+        // Collect all speeds depending on type
+        let allSpeeds: [Double] = entities.flatMap { entity in
+            return [entity.downloadSpeed, entity.uploadSpeed]
+        }
+        
+        guard !allSpeeds.isEmpty else { return 0 }
+        let total = allSpeeds.reduce(0, +)
+        return total / Double(allSpeeds.count)
+    }
+    
     // Convert from TestResultEntity to TestResults
     func toTestResults() -> TestResults {
         return TestResults(
