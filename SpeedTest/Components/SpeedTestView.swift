@@ -374,7 +374,7 @@ struct NetworkDiagnosticsView: View {
                     .rotationEffect(.degrees(90))
                     .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
                 
-                Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready".localized))
+                Text((diagnosticStatus == 0) ? "Start".localized : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready".localized))
                     .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
                     .foregroundColor(.white)
             }

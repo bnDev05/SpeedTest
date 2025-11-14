@@ -279,3 +279,4 @@ Latenz, auch Antwortzeit genannt, ist die Dauer, die ein Datenpaket benötigt, u
 "Cellular" = "Mobilfunk";
 "Connected" = "Verbunden";
 "Wi-Fi" = "WLAN";
+"Wi-Fi Network" = "WLAN-Netzwerk";
