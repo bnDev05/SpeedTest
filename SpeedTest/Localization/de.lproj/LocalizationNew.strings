@@ -11,7 +11,7 @@
 "Internet Speed" = "Internetgeschwindigkeit";
 "Run a " = "Führen Sie eine ";
 "diagnostic " = "Diagnose ";
-"on\n your internet" = "Ihres\n Internets durch";
+"on\n your internet" = "Ihres Internets durch";
 "Loved " = "Geliebt ";
 "by thousands\n" = "von Tausenden\n";
 "of users" = "von Nutzern";
@@ -25,7 +25,7 @@
 "Upgrade " = "Upgrade ";
 "to the full\n version" = "zur Vollversion";
 "Find out your download and upload\n speeds in seconds" = "Ermitteln Sie Ihre Download- und Upload-\nGeschwindigkeiten in Sekunden";
-"Scan your network security and find\n the best access points" = "Scannen Sie Ihre Netzwerksicherheit und finden\n Sie die besten Zugangspunkte";
+"Scan your network security and find\n the best access points" = "Scannen Sie Ihre Netzwerksicherheit und \nfinden Sie die besten Zugangspunkte";
 "Real reviews from users who loved\n our product from day one" = "Echte Bewertungen von Nutzern, die unser\n Produkt vom ersten Tag an geliebt haben";
 "Compare Wi-Fi, mobile, and \nmore — save every speed test" = "Vergleichen Sie WLAN, Mobilfunk und\n mehr – speichern Sie jeden Speedtest";
 "Indicate which connection you \nuse most often" = "Geben Sie an, welche Verbindung Sie\n am häufigsten nutzen";
@@ -60,11 +60,11 @@
 "Start your " = "Starten Sie Ihre ";
 "3-day free!" = "3 Tage kostenlos!";
 "Today: Get instant access" = "Heute: Sofortiger Zugang";
-"Get access to all premium \nfeatures for free" = "Erhalten Sie kostenlosen Zugang zu\n allen Premium-Funktionen";
+"Get access to all premium \nfeatures for free" = "Erhalten Sie kostenlosen Zugang zu allen Premium-Funktionen";
 "Day 2: Trial reminder" = "Tag 2: Testversion-Erinnerung";
-"We'll send you an email that your \ntrial is ending" = "Wir senden Ihnen eine E-Mail, dass\n Ihre Testversion endet";
+"We'll send you an email that your \ntrial is ending" = "Wir senden Ihnen eine E-Mail, dass Ihre Testversion endet";
 "Day 3: Full Subscription" = "Tag 3: Vollständiges Abonnement";
-"You will be charged today, \ncancel anytime" = "Die Abrechnung erfolgt heute,\n jederzeit kündbar";
+"You will be charged today, \ncancel anytime" = "Die Abrechnung erfolgt heute, jederzeit kündbar";
 "First 3 days free, " = "Erste 3 Tage kostenlos, ";
 "then %@ per Year. Cancel at anytime" = "dann %@ pro Jahr. Jederzeit kündbar";
 
@@ -280,3 +280,6 @@ Latenz, auch Antwortzeit genannt, ist die Dauer, die ein Datenpaket benötigt, u
 "Connected" = "Verbunden";
 "Wi-Fi" = "WLAN";
 "Wi-Fi Network" = "WLAN-Netzwerk";
+"First 3 days free," = "Die ersten 3 Tage kostenlos,";
+"then %@ per Year." = "danach %@ pro Jahr.";
+"Cancel at anytime" = "Jederzeit kündbar";

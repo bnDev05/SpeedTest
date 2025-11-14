@@ -278,3 +278,6 @@ Latency, also called response time, is the duration it takes for a data packet t
 "Connected" = "Connected";
 "Wi-Fi" = "Wi-Fi";
 "Wi-Fi Network" = "Wi-Fi Network";
+"First 3 days free," = "First 3 days free,";
+"then %@ per Year." = "then %@ per Year.";
+"Cancel at anytime" = "Cancel at anytime";

@@ -134,7 +134,7 @@ struct OnboardingView: View {
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.medium, size: 14))
                     .frame(height: 42)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 10)
             }
         }
     }
@@ -194,13 +194,13 @@ struct OnboardingView: View {
                         .frame(width: UIScreen.main.bounds.width - 36)
                         .foregroundStyle(LinearGradient.appBlueGradient.opacity(viewModel.showActive(step: step) ? 1 : 0.5))
                         .shadow(color: viewModel.showActive(step: step) ? Color(hex: "#245BEB").opacity(0.47) : .clear, radius: 10, x: 0, y: 4)
-                        .shadow(color: (UIScreen.main.bounds.height <= 667) ? .white.opacity(0.6) : .clear, radius: 8, x: 0, y: 4)
+//                        .shadow(color: (UIScreen.main.bounds.height <= 667) ? .white.opacity(0.6) : .clear, radius: 8, x: 0, y: 4)
                     
                     Text("Continue".localized)
                         .foregroundStyle(.white.opacity(viewModel.showActive(step: step) ? 1 : 0.5))
                         .font(.poppins(.bold, size: 18))
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, (step == 4 || step == 5 ) ? 25 : 10)
                 .padding(.top, -10)
             }
             .buttonStyle(HapticButtonStyle())

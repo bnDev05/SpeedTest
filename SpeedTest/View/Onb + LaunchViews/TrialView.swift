@@ -47,6 +47,7 @@ struct TrialView: View {
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .lineLimit(1)
                         Text("Get access to all premium \nfeatures for free".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -54,12 +55,15 @@ struct TrialView: View {
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("We’ll send you an email that your \ntrial is ending".localized)
+                            .lineLimit(1)
+
+                        Text("We'll send you an email that your \ntrial is ending".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text("Day 3: Full Subscription".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
+                            .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text("You will be charged today, \ncancel anytime".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
@@ -69,12 +73,14 @@ struct TrialView: View {
                 .frame(maxHeight: .infinity, alignment: .center)
                 .padding(.horizontal)
                 
-                Text("First 3 days free, ".localized)
+                Text("First 3 days free,".localized)
                     .foregroundStyle(.white)
                     .font(.poppins(.bold, size: 18))
-                Text("then \(price) per Year. Cancel at anytime".localized)
+
+                Text("\(String(format: "then %@ per Year.".localized, price)) \( "Cancel at anytime".localized )")
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.medium, size: 14))
+
                 
                 Button {
                     Task {
@@ -99,7 +105,7 @@ struct TrialView: View {
                             .frame(width: UIScreen.main.bounds.width - 36)
                             .foregroundStyle(LinearGradient.appBlueGradient)
                             .shadow(color: Color(hex: "#245BEB").opacity(0.47), radius: 10, x: 0, y: 4)
-                            .shadow(color: (UIScreen.main.bounds.height <= 667) ? .white.opacity(0.6) : .clear, radius: 8, x: 0, y: 4)
+//                            .shadow(color: (UIScreen.main.bounds.height <= 667) ? .white.opacity(0.6) : .clear, radius: 8, x: 0, y: 4)
                         
                         Text("Continue".localized)
                             .foregroundStyle(.white)

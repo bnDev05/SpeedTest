@@ -110,7 +110,14 @@ struct SignalView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             if viewModel.overallNetworkStatus == 2 {
                 Button {
-                    viewModel.restartDiagnostic()
+                    if subscriptionManager.isSubscribed {
+                        viewModel.restartDiagnostic()
+                    } else if firstSignalTest {
+                        firstSignalTest = false
+                        viewModel.restartDiagnostic()
+                    } else {
+                        NavigationManager.shared.push(OnboardingView(isDismissAllowed: true, step: 6))
+                    }
                 } label: {
                     Image(.retestServerButton)
                         .resizable()

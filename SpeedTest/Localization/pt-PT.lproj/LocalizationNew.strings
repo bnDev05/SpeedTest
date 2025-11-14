@@ -280,3 +280,6 @@ A latência, também chamada de tempo de resposta, é a duração que um pacote 
 "Connected" = "Conectado";
 "Wi-Fi" = "Wi-Fi";
 "Wi-Fi Network" = "Rede Wi-Fi";
+"First 3 days free," = "Primeiros 3 dias grátis,";
+"then %@ per Year." = "depois %@ por ano.";
+"Cancel at anytime" = "Cancele a qualquer momento";

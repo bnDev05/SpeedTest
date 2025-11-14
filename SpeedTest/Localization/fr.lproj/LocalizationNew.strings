@@ -283,3 +283,6 @@ La latence, ou temps de réponse, est la durée nécessaire pour qu’un paquet 
 "Connected" = "Connecté";
 "Wi-Fi" = "Wi-Fi";
 "Wi-Fi Network" = "Réseau Wi-Fi";
+"First 3 days free," = "3 premiers jours gratuits,";
+"then %@ per Year." = "puis %@ par an.";
+"Cancel at anytime" = "Annulez à tout moment";

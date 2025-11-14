@@ -190,7 +190,8 @@ final class SignalViewModel: ObservableObject {
         
         // Test actual internet connectivity
         testInternetConnection { [weak self] success, speed in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) {
+            // ✅ Remove the artificial delay - respond immediately when done
+            DispatchQueue.main.async {
                 guard let self = self else { return }
                 
                 if success {
@@ -209,14 +210,14 @@ final class SignalViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func checkServerConnection() {
         serverConnectionStatus = 1
         animateProgress(to: 95, duration: 1.0)
         
-        // Test connection to a speed test server
         testServerConnection { [weak self] success, latency in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            // ✅ Remove the artificial delay here too
+            DispatchQueue.main.async {
                 guard let self = self else { return }
                 
                 if success {
@@ -235,7 +236,80 @@ final class SignalViewModel: ObservableObject {
             }
         }
     }
-    
+
+    // ✅ Improved with error logging and GET fallback
+    private func testInternetConnection(completion: @escaping (Bool, Int) -> Void) {
+        guard let url = URL(string: "https://www.google.com") else {
+            print("❌ Invalid URL for internet test")
+            completion(false, 0)
+            return
+        }
+        
+        let startTime = Date()
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        request.timeoutInterval = 10.0  // Increased timeout
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            let latency = Int(Date().timeIntervalSince(startTime) * 1000)
+            
+            if let error = error {
+                print("❌ Internet connection error: \(error.localizedDescription)")
+                completion(false, 0)
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("✅ Internet connection status code: \(httpResponse.statusCode)")
+                if (200...299).contains(httpResponse.statusCode) {
+                    completion(true, latency)
+                } else {
+                    completion(false, 0)
+                }
+            } else {
+                print("❌ No HTTP response received")
+                completion(false, 0)
+            }
+        }.resume()
+    }
+
+    // ✅ Improved with error logging
+    private func testServerConnection(completion: @escaping (Bool, Int) -> Void) {
+        guard let url = URL(string: "https://speed.cloudflare.com") else {
+            print("❌ Invalid URL for server test")
+            completion(false, 0)
+            return
+        }
+        
+        let startTime = Date()
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        request.timeoutInterval = 10.0  // Increased timeout
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            let latency = Int(Date().timeIntervalSince(startTime) * 1000)
+            
+            if let error = error {
+                print("❌ Server connection error: \(error.localizedDescription)")
+                completion(false, 0)
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("✅ Server connection status code: \(httpResponse.statusCode)")
+                if (200...299).contains(httpResponse.statusCode) {
+                    completion(true, latency)
+                } else {
+                    completion(false, 0)
+                }
+            } else {
+                print("❌ No HTTP response received")
+                completion(false, 0)
+            }
+        }.resume()
+    }
     private func completeDiagnostic() {
         animateProgress(to: 100, duration: 0.5)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -352,51 +426,5 @@ final class SignalViewModel: ObservableObject {
             return (!addresses.isEmpty, latency)
         }
         return (false, 0)
-    }
-    
-    private func testInternetConnection(completion: @escaping (Bool, Int) -> Void) {
-        guard let url = URL(string: "https://www.google.com") else {
-            completion(false, 0)
-            return
-        }
-        
-        let startTime = Date()
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-        request.timeoutInterval = 5.0
-        
-        URLSession.shared.dataTask(with: request) { _, response, error in
-            let latency = Int(Date().timeIntervalSince(startTime) * 1000)
-            
-            if let httpResponse = response as? HTTPURLResponse,
-               httpResponse.statusCode == 200 {
-                completion(true, latency)
-            } else {
-                completion(false, 0)
-            }
-        }.resume()
-    }
-    
-    private func testServerConnection(completion: @escaping (Bool, Int) -> Void) {
-        guard let url = URL(string: "https://speed.cloudflare.com") else {
-            completion(false, 0)
-            return
-        }
-        
-        let startTime = Date()
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-        request.timeoutInterval = 5.0
-        
-        URLSession.shared.dataTask(with: request) { _, response, error in
-            let latency = Int(Date().timeIntervalSince(startTime) * 1000)
-            
-            if let httpResponse = response as? HTTPURLResponse,
-               (200...299).contains(httpResponse.statusCode) {
-                completion(true, latency)
-            } else {
-                completion(false, 0)
-            }
-        }.resume()
     }
 }
