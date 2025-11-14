@@ -15,7 +15,7 @@ struct SpeedTestApp: App {
     @AppStorage("CurrentAppIcon") private var currentAppIcon: CustomAppIcon = .defaultIcon
     
     init() {
-//        FirebaseApp.configure()
+        FirebaseApp.configure()
         Bugsnag.start()
         BugsnagPerformance.start()
     }

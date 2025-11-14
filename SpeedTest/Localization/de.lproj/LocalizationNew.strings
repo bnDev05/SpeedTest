@@ -1,7 +1,281 @@
-/* 
+/*
   LocalizationNew.strings
   SpeedTest
-
-  Created by Behruz Norov on 14/11/25.
+  
+  German Localization
   
 */
+
+/* Onboarding */
+"Check your \n" = "Überprüfen Sie Ihre \n";
+"Internet Speed" = "Internetgeschwindigkeit";
+"Run a " = "Führen Sie eine ";
+"diagnostic " = "Diagnose ";
+"on\n your internet" = "Ihres\n Internets durch";
+"Loved " = "Geliebt ";
+"by thousands\n" = "von Tausenden\n";
+"of users" = "von Nutzern";
+"Save " = "Speichern Sie ";
+"Your Network\n Test Results" = "Ihre Netzwerk-\n Testergebnisse";
+"How do you " = "Wie ";
+"connect\n" = "verbinden Sie sich\n";
+"to the internet?" = "mit dem Internet?";
+"How often " = "Wie oft ";
+"do you\n test your speed?" = "testen Sie\n Ihre Geschwindigkeit?";
+"Upgrade " = "Upgrade ";
+"to the full\n version" = "zur Vollversion";
+"Find out your download and upload\n speeds in seconds" = "Ermitteln Sie Ihre Download- und Upload-\nGeschwindigkeiten in Sekunden";
+"Scan your network security and find\n the best access points" = "Scannen Sie Ihre Netzwerksicherheit und finden\n Sie die besten Zugangspunkte";
+"Real reviews from users who loved\n our product from day one" = "Echte Bewertungen von Nutzern, die unser\n Produkt vom ersten Tag an geliebt haben";
+"Compare Wi-Fi, mobile, and \nmore — save every speed test" = "Vergleichen Sie WLAN, Mobilfunk und\n mehr – speichern Sie jeden Speedtest";
+"Indicate which connection you \nuse most often" = "Geben Sie an, welche Verbindung Sie\n am häufigsten nutzen";
+"Your answer helps us show the \nmost useful insights" = "Ihre Antwort hilft uns, die\n nützlichsten Erkenntnisse anzuzeigen";
+"Treat yourself to stable, fast internet—without ads—for only" = "Gönnen Sie sich stabiles, schnelles Internet – ohne Werbung – für nur";
+"per" = "pro";
+"year" = "Jahr";
+"Continue" = "Weiter";
+"Privacy" = "Datenschutz";
+"Restore" = "Wiederherstellen";
+"Terms" = "Nutzungsbedingungen";
+"Not Now" = "Nicht jetzt";
+"Restore Successful" = "Wiederherstellung erfolgreich";
+"Your previous purchases have been successfully restored." = "Ihre vorherigen Käufe wurden erfolgreich wiederhergestellt.";
+"Restore Failed" = "Wiederherstellung fehlgeschlagen";
+"No active subscription found or restore failed. Please try again later." = "Kein aktives Abonnement gefunden oder Wiederherstellung fehlgeschlagen. Bitte versuchen Sie es später erneut.";
+"OK" = "OK";
+
+/* Connection Types */
+"Home Wi-Fi" = "Heimnetzwerk (WLAN)";
+"Mobile internet" = "Mobilfunknetz";
+"Wired connection" = "Kabelverbindung";
+"Public Wi-Fi" = "Öffentliches WLAN";
+
+/* Test Frequency */
+"First time" = "Zum ersten Mal";
+"Once a day or more often" = "Einmal täglich oder öfter";
+"Several times a week" = "Mehrmals pro Woche";
+"Only when problems arise" = "Nur bei Problemen";
+
+/* Trial View */
+"Start your " = "Starten Sie Ihre ";
+"3-day free!" = "3 Tage kostenlos!";
+"Today: Get instant access" = "Heute: Sofortiger Zugang";
+"Get access to all premium \nfeatures for free" = "Erhalten Sie kostenlosen Zugang zu\n allen Premium-Funktionen";
+"Day 2: Trial reminder" = "Tag 2: Testversion-Erinnerung";
+"We'll send you an email that your \ntrial is ending" = "Wir senden Ihnen eine E-Mail, dass\n Ihre Testversion endet";
+"Day 3: Full Subscription" = "Tag 3: Vollständiges Abonnement";
+"You will be charged today, \ncancel anytime" = "Die Abrechnung erfolgt heute,\n jederzeit kündbar";
+"First 3 days free, " = "Erste 3 Tage kostenlos, ";
+"then %@ per Year. Cancel at anytime" = "dann %@ pro Jahr. Jederzeit kündbar";
+
+/* Tab Titles */
+"Test" = "Test";
+"Signal" = "Signal";
+"History" = "Verlauf";
+"Settings" = "Einstellungen";
+
+/* Speed Test View */
+"Speed Test" = "Geschwindigkeitstest";
+"Ping:" = "Ping:";
+"Jitter:" = "Jitter:";
+"Loss:" = "Verlust:";
+"Download" = "Download";
+"Upload" = "Upload";
+"Start" = "Start";
+"You are connected \nto the Internet" = "Sie sind mit dem\nInternet verbunden";
+"Check your connection:\nthe speed test may fail" = "Überprüfen Sie Ihre Verbindung:\nDer Geschwindigkeitstest könnte fehlschlagen";
+"Connection..." = "Verbindung...";
+"Ready" = "Bereit";
+"Change testing server" = "Testserver wechseln";
+"Error" = "Fehler";
+"The test could not be completed. Check your internet connection and try again." = "Der Test konnte nicht abgeschlossen werden. Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.";
+
+/* Result View */
+"Result" = "Ergebnis";
+"Ping" = "Ping";
+"Provider" = "Anbieter";
+"Internal IP" = "Interne IP";
+"External IP" = "Externe IP";
+"Bandwidth" = "Bandbreite";
+"BY Average: %@M" = "BY Durchschnitt: %@M";
+"Сonnection Rating" = "Verbindungsbewertung";
+"Watch Videos" = "Videos ansehen";
+"Play Games" = "Spiele spielen";
+"Upload Photos" = "Fotos hochladen";
+"Retry Test" = "Test wiederholen";
+"A repeat test will give more accurate results" = "Ein wiederholter Test liefert genauere Ergebnisse";
+
+/* History View */
+"History is empty." = "Verlauf ist leer.";
+"Edit" = "Bearbeiten";
+"Delete" = "Löschen";
+"See All" = "Alle anzeigen";
+
+/* Signal/Network Diagnostic View */
+"Network Diagnostic" = "Netzwerkdiagnose";
+"Network Settings" = "Netzwerkeinstellungen";
+"Signal Strength" = "Signalstärke";
+"DNS Status" = "DNS-Status";
+"Internet Connection" = "Internetverbindung";
+"Server Connection" = "Serververbindung";
+"Network name" = "Netzwerkname";
+"Normal" = "Normal";
+"No network" = "Kein Netzwerk";
+"No signal" = "Kein Signal";
+"Timeout" = "Zeitüberschreitung";
+"Excellent" = "Ausgezeichnet";
+"Good" = "Gut";
+"Failed" = "Fehlgeschlagen";
+"No connection" = "Keine Verbindung";
+"Unreachable" = "Nicht erreichbar";
+"Network Settings Error" = "Netzwerkeinstellungsfehler";
+"No active network interface detected. Please check your network connection." = "Keine aktive Netzwerkschnittstelle erkannt. Bitte überprüfen Sie Ihre Netzwerkverbindung.";
+"Signal Strength Error" = "Signalstärkefehler";
+"Network signal is not available. Please check your connection." = "Netzwerksignal ist nicht verfügbar. Bitte überprüfen Sie Ihre Verbindung.";
+"Signal Strength Timeout" = "Signalstärke-Zeitüberschreitung";
+"Unable to detect signal strength. Please try again." = "Signalstärke kann nicht erkannt werden. Bitte versuchen Sie es erneut.";
+"DNS Resolution Failed" = "DNS-Auflösung fehlgeschlagen";
+"Unable to resolve domain names. Check your DNS settings." = "Domainnamen können nicht aufgelöst werden. Überprüfen Sie Ihre DNS-Einstellungen.";
+"Internet Connection Failed" = "Internetverbindung fehlgeschlagen";
+"Unable to connect to the internet. Please check your network." = "Verbindung zum Internet nicht möglich. Bitte überprüfen Sie Ihr Netzwerk.";
+"Server Connection Failed" = "Serververbindung fehlgeschlagen";
+"Unable to reach speed test server. Please try again later." = "Geschwindigkeitstestserver nicht erreichbar. Bitte versuchen Sie es später erneut.";
+
+/* Settings View */
+"Unit" = "Einheit";
+"Dial scale" = "Skalierung";
+"Subscription plans" = "Abonnements";
+"Replace icon" = "Symbol ersetzen";
+"FAQ" = "FAQ";
+"Share link" = "Link teilen";
+"Privacy Policy" = "Datenschutzrichtlinie";
+"Terms of Use" = "Nutzungsbedingungen";
+"Select a unit of measurement" = "Wählen Sie eine Maßeinheit";
+"Get Unlimited access" = "Unbegrenzter Zugang";
+"to all application features" = "zu allen App-Funktionen";
+"Start Now" = "Jetzt starten";
+
+/* Change Server View */
+"Change server" = "Server wechseln";
+"Server search" = "Serversuche";
+"Select automatically" = "Automatisch auswählen";
+"Loading servers..." = "Server werden geladen...";
+"No servers found" = "Keine Server gefunden";
+"No servers available. Check your connection." = "Keine Server verfügbar. Überprüfen Sie Ihre Verbindung.";
+
+/* Subscription View */
+"Subscription plans" = "Abonnements";
+"Loading subscription plans..." = "Abonnements werden geladen...";
+"Failed to load subscription plans" = "Abonnements konnten nicht geladen werden";
+"Please check:" = "Bitte überprüfen Sie:";
+"• Product IDs match in App Store Connect" = "• Produkt-IDs stimmen in App Store Connect überein";
+"• Products are approved and available" = "• Produkte sind genehmigt und verfügbar";
+"• Apphud dashboard has correct product IDs" = "• Apphud-Dashboard hat korrekte Produkt-IDs";
+"• Using correct placement identifier" = "• Korrekte Platzierungs-ID wird verwendet";
+"Retry" = "Wiederholen";
+"Unlimited number of tests" = "Unbegrenzte Anzahl von Tests";
+"More accurate results" = "Genauere Ergebnisse";
+"Ad-Free experience" = "Werbefreies Erlebnis";
+"No valid subscription products available" = "Keine gültigen Abonnementprodukte verfügbar";
+"yearly" = "jährlich";
+"3_day_free_trial" = "3 Tage kostenlose Testversion";
+"weekly" = "wöchentlich";
+"daily" = "täglich";
+"monthly" = "monatlich";
+"week" = "Woche";
+"day" = "Tag";
+"month" = "Monat";
+"Try For Free" = "Kostenlos testen";
+"Please select a subscription plan" = "Bitte wählen Sie ein Abonnement";
+
+/* Rate App View */
+"How was your experience?" = "Wie war Ihre Erfahrung?";
+"We truly value your input—it helps \nus continuously improve" = "Wir schätzen Ihr Feedback sehr – es hilft\n uns, uns ständig zu verbessern";
+"Write a review" = "Bewertung schreiben";
+"Not now" = "Nicht jetzt";
+
+/* FAQ Questions */
+"How to resolve an internet connection issue?" = "Wie behebt man ein Internetverbindungsproblem?";
+"How to fix a DNS error?" = "Wie behebt man einen DNS-Fehler?";
+"How to fix a weak signal?" = "Wie behebt man ein schwaches Signal?";
+"What do these terms mean?" = "Was bedeuten diese Begriffe?";
+"What is the purpose of changing the server?" = "Welchen Zweck hat der Serverwechsel?";
+"Introduction to Ping Test" = "Einführung in den Ping-Test";
+
+"Open the Settings app → Wi-Fi, tap the details of your current Wi-Fi network, and ensure that Configure IP is set to Automatic, Configure DNS is set to Automatic, and Configure Proxy is Off." = "Öffnen Sie die Einstellungen-App → WLAN, tippen Sie auf die Details Ihres aktuellen WLAN-Netzwerks und stellen Sie sicher, dass IP konfigurieren auf Automatisch, DNS konfigurieren auf Automatisch und Proxy konfigurieren auf Aus eingestellt ist.";
+"Open the Settings app, turn off Wi-Fi or Cellular Data, wait a few seconds, then turn it back on." = "Öffnen Sie die Einstellungen-App, deaktivieren Sie WLAN oder Mobile Daten, warten Sie einige Sekunden und aktivieren Sie es dann wieder.";
+"Open Settings → VPN and disable any active VPN connections." = "Öffnen Sie Einstellungen → VPN und deaktivieren Sie alle aktiven VPN-Verbindungen.";
+"Try turning off your device or your router, then restart it." = "Versuchen Sie, Ihr Gerät oder Ihren Router auszuschalten und dann neu zu starten.";
+"Check whether your internet service subscription has expired—you may need to log in again or renew your plan." = "Überprüfen Sie, ob Ihr Internetdienst-Abonnement abgelaufen ist – möglicherweise müssen Sie sich erneut anmelden oder Ihren Tarif erneuern.";
+
+"Open Settings → Wi-Fi, check the details of your connected Wi-Fi network, and make sure that Configure DNS is set to Automatic and Configure Proxy is set to Off." = "Öffnen Sie Einstellungen → WLAN, überprüfen Sie die Details Ihres verbundenen WLAN-Netzwerks und stellen Sie sicher, dass DNS konfigurieren auf Automatisch und Proxy konfigurieren auf Aus eingestellt ist.";
+
+"If your Wi-Fi signal is weak or unstable, try the following:
+• Turn off and restart your phone or tablet, then reconnect to Wi-Fi.
+• If you're using a home router, turn it off for about 10 seconds, then power it back on.
+• If you're connected to a public Wi-Fi network, try moving to a different location to avoid signal blockage from buildings.
+• Attempt to connect to another available and reliable Wi-Fi network.
+If your mobile network signal is weak or unstable, we recommend:
+• Turning off and restarting your phone or tablet, then reconnecting to the mobile network.
+• Changing your location to avoid signal obstruction caused by buildings or large crowds.
+• Closing other background apps running on your phone." =
+"Wenn Ihr WLAN-Signal schwach oder instabil ist, versuchen Sie Folgendes:
+• Schalten Sie Ihr Telefon oder Tablet aus und starten Sie es neu, verbinden Sie sich dann erneut mit dem WLAN.
+• Wenn Sie einen Heimrouter verwenden, schalten Sie ihn für etwa 10 Sekunden aus und dann wieder ein.
+• Wenn Sie mit einem öffentlichen WLAN-Netzwerk verbunden sind, versuchen Sie, sich an einen anderen Ort zu bewegen, um Signalblockierungen durch Gebäude zu vermeiden.
+• Versuchen Sie, sich mit einem anderen verfügbaren und zuverlässigen WLAN-Netzwerk zu verbinden.
+Wenn Ihr Mobilfunksignal schwach oder instabil ist, empfehlen wir:
+• Schalten Sie Ihr Telefon oder Tablet aus und starten Sie es neu, verbinden Sie sich dann erneut mit dem Mobilfunknetz.
+• Ändern Sie Ihren Standort, um Signalbehinderungen durch Gebäude oder große Menschenmengen zu vermeiden.
+• Schließen Sie andere im Hintergrund laufende Apps auf Ihrem Telefon.";
+
+"DNS:
+Domain Name Servers (DNS) are the Internet's equivalent of a phone book. They maintain a directory of domain names (e.g., www.example.com) and translate them into Internet Protocol (IP) addresses (e.g., 192.0.2.1). This translation is necessary because, while domain names are easy for people to remember, computers and other devices access websites using IP addresses.
+Internet Connection:
+An internet connection is the ability to link to the Internet using devices such as computers, smartphones, or other terminals, thereby enabling access to online services like email and the World Wide Web.
+Server Connection:
+The app requests speed-test resources from a server. If the connection between client devices (such as your cellphone) and the server is unstable or fails, the app won't be able to retrieve the necessary resources, resulting in a failed speed test." =
+"DNS:
+Domain Name Servers (DNS) sind das Äquivalent eines Telefonbuchs im Internet. Sie verwalten ein Verzeichnis von Domainnamen (z. B. www.example.com) und übersetzen diese in IP-Adressen (z. B. 192.0.2.1). Diese Übersetzung ist notwendig, da Domainnamen zwar für Menschen leicht zu merken sind, Computer und andere Geräte jedoch über IP-Adressen auf Websites zugreifen.
+Internetverbindung:
+Eine Internetverbindung ist die Fähigkeit, über Geräte wie Computer, Smartphones oder andere Endgeräte eine Verbindung zum Internet herzustellen und dadurch Zugang zu Online-Diensten wie E-Mail und dem World Wide Web zu erhalten.
+Serververbindung:
+Die App fordert Geschwindigkeitstest-Ressourcen von einem Server an. Wenn die Verbindung zwischen Client-Geräten (wie Ihrem Mobiltelefon) und dem Server instabil ist oder fehlschlägt, kann die App die erforderlichen Ressourcen nicht abrufen, was zu einem fehlgeschlagenen Geschwindigkeitstest führt.";
+
+"Since many websites and streaming services host their content on servers located in different regions, speed test results from a single server may be inaccurate (for example, when you're using a VPN to access the internet). To provide the most reliable speed test, the system uses the server closest to your location." =
+"Da viele Websites und Streaming-Dienste ihre Inhalte auf Servern in verschiedenen Regionen hosten, können Geschwindigkeitstestergebnisse von einem einzelnen Server ungenau sein (z. B. wenn Sie ein VPN für den Internetzugang verwenden). Um den zuverlässigsten Geschwindigkeitstest zu liefern, verwendet das System den Server, der Ihrem Standort am nächsten ist.";
+
+"Definition:
+A ping test is primarily used to check the responsiveness and stability of a connected network.
+
+Principle:
+Because every IP address or URL is unique, your device sends a small test data packet to the target IP address or URL and requests that the destination return a packet of the same size. This process determines whether the two devices are successfully connected over the internet and measures the round-trip time—also known as latency or response time—between them.
+
+Packet Loss Rate:
+Packet loss rate refers to the percentage of data packets that fail to reach their destination during the test relative to the total number of packets sent. It is a key indicator of network quality. Packet loss is typically influenced by two main factors: the network connection itself and the router.
+
+Latency:
+Latency, also called response time, is the duration it takes for a data packet to travel from your device to the target server and back. The shorter the response time, the faster your device communicates with the tested IP address or URL. Generally, latency between 0 and 100 milliseconds (ms) is considered excellent and unlikely to cause noticeable lag or stuttering." =
+"Definition:
+Ein Ping-Test wird hauptsächlich verwendet, um die Reaktionsfähigkeit und Stabilität eines verbundenen Netzwerks zu überprüfen.
+
+Prinzip:
+Da jede IP-Adresse oder URL eindeutig ist, sendet Ihr Gerät ein kleines Testdatenpaket an die Ziel-IP-Adresse oder URL und fordert das Ziel auf, ein Paket derselben Größe zurückzusenden. Dieser Prozess bestimmt, ob die beiden Geräte erfolgreich über das Internet verbunden sind, und misst die Roundtrip-Zeit – auch als Latenz oder Antwortzeit bekannt – zwischen ihnen.
+
+Paketverlustrate:
+Die Paketverlustrate bezieht sich auf den Prozentsatz der Datenpakete, die während des Tests ihr Ziel nicht erreichen, im Verhältnis zur Gesamtzahl der gesendeten Pakete. Sie ist ein wichtiger Indikator für die Netzwerkqualität. Paketverlust wird typischerweise von zwei Hauptfaktoren beeinflusst: der Netzwerkverbindung selbst und dem Router.
+
+Latenz:
+Latenz, auch Antwortzeit genannt, ist die Dauer, die ein Datenpaket benötigt, um von Ihrem Gerät zum Zielserver und zurück zu gelangen. Je kürzer die Antwortzeit, desto schneller kommuniziert Ihr Gerät mit der getesteten IP-Adresse oder URL. Im Allgemeinen wird eine Latenz zwischen 0 und 100 Millisekunden (ms) als ausgezeichnet angesehen und verursacht wahrscheinlich keine spürbaren Verzögerungen oder Ruckler.";
+
+/* Quick Actions */
+"dont_delete" = "Nicht löschen";
+"try_it_off" = "Probieren Sie es aus";
+
+/* Speed Test View - Additional */
+"Loading..." = "Wird geladen...";
+"No server selected" = "Kein Server ausgewählt";
+"Tap to select" = "Tippen zum Auswählen";
+"Cellular" = "Mobilfunk";
+"Connected" = "Verbunden";
+"Wi-Fi" = "WLAN";
