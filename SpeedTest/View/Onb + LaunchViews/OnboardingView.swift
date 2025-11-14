@@ -7,13 +7,14 @@ struct OnboardingView: View {
     @StateObject private var viewModel = OnbViewModel()
     @Environment(\.dismiss) private var dismiss
     @State var isDismissAllowed: Bool = false
-    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var isPriceLoading = false
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @AppStorage("isFirst") private var isFirst: Bool = true
     @State private var showAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var yearlyPrice: String = ""
-    @State private var step: Int = 0
+    @State var step: Int = 0
     
     let titles: [Text] = [
         Text("Check your \n".localized.capitalized).foregroundColor(.white)
@@ -151,18 +152,25 @@ struct OnboardingView: View {
             
             Button {
                 if step == 6 {
-                    Task {
-                        guard let paywall = subscriptionManager.paywall else {
-                            await subscriptionManager.fetchPaywall()
-                            return
-                        }
-
-                        if let product = paywall.products.first(where: {
-                            subscriptionManager.getProductType($0) == "yearly"
-                        }) {
-                            let success = await subscriptionManager.purchase(product: product)
-                            if success {
-                                NavigationManager.shared.push(TabView())
+                    if isFirst {
+                        isFirst = false
+                        NavigationManager.shared.present(TrialView(price: yearlyPrice, onDismiss: {
+                            NavigationManager.shared.push(TabView())
+                        }), isFullScreenCover: false, isCrossDissolve: false)
+                    } else {
+                        Task {
+                            guard let paywall = subscriptionManager.paywall else {
+                                await subscriptionManager.fetchPaywall()
+                                return
+                            }
+                            
+                            if let product = paywall.products.first(where: {
+                                subscriptionManager.getProductType($0) == "yearly"
+                            }) {
+                                let success = await subscriptionManager.purchase(product: product)
+                                if success {
+                                    NavigationManager.shared.push(TabView())
+                                }
                             }
                         }
                     }

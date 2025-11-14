@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 import Charts
 
 struct SpeedDataPoint: Identifiable {
@@ -13,35 +12,50 @@ struct UploadDownloadView: View {
     var isGreen: Bool = true
     @Binding var speed: Double
     var isHistoryGiven: Bool = false
-    
-    // Store historical speed data for the chart
-    @State var speedHistory: [SpeedDataPoint] = []
+
+    /// Static history passed from outside (Core Data)
+    var initialHistory: [SpeedDataPoint] = []
+
+    /// Dynamic live history for real-time updates
+    @State private var liveHistory: [SpeedDataPoint] = []
+
     @State private var maxDataPoints = 20
-    
-    // Dynamic unit from user settings
+
+    // Unit settings
     @AppStorage("unit") private var unit: Int = 0
     @State private var selectedUnit: SpeedUnit = .mbitPerSec
     @State private var displayedSpeed: String = "0.0"
     @State private var displayedUnit: String = "Mbit"
-    
-    var cancellables = Set<AnyCancellable>()
-    
-    init(isDownload: Bool, isGreen: Bool = true, speed: Binding<Double>, isHistoryGiven: Bool = false, speedHistory: [SpeedDataPoint] = []) {
+
+    init(
+        isDownload: Bool,
+        isGreen: Bool = true,
+        speed: Binding<Double>,
+        isHistoryGiven: Bool = false,
+        speedHistory: [SpeedDataPoint] = []
+    ) {
         self.isDownload = isDownload
         self.isGreen = isGreen
         self._speed = speed
         self.isHistoryGiven = isHistoryGiven
-        self.speedHistory = speedHistory
+        self.initialHistory = speedHistory
     }
-    
+
+    /// Computed source of truth for chart
+    private var historyForChart: [SpeedDataPoint] {
+        isHistoryGiven ? initialHistory : liveHistory
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+
+            // TITLE
             HStack {
                 Image(isDownload ? .greenDownloadIcon : (isGreen ? .greenUploadIcon : .pinkUploadIcon))
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 24, height: 24, alignment: .center)
-                
+                    .frame(width: 24, height: 24)
+
                 Text(isDownload ? "Download".localized : "Upload".localized)
                     .font(.poppins(.semibold, size: 16))
                     .foregroundStyle(.white)
@@ -49,23 +63,24 @@ struct UploadDownloadView: View {
             .padding(.horizontal, 16)
             .padding(.top, 24)
 
+            // SPEED TEXT
             HStack(alignment: .bottom) {
                 Text(displayedSpeed)
                     .foregroundStyle(.white)
                     .font(.poppins(.semibold, size: 24))
-                
-                Text("\(displayedUnit)")
+
+                Text(displayedUnit)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.semibold, size: 16))
             }
             .padding(.horizontal, 16)
             .padding(.top, 4)
-            
-            // Chart stays identical
-            if !speedHistory.isEmpty {
-                Chart(speedHistory) { dataPoint in
+
+            // CHART
+            if !historyForChart.isEmpty {
+                Chart(historyForChart) { dataPoint in
                     AreaMark(
-                        x: .value("Time", dataPoint.index),
+                        x: .value("Index", dataPoint.index),
                         y: .value("Speed", dataPoint.speed)
                     )
                     .foregroundStyle(
@@ -81,20 +96,21 @@ struct UploadDownloadView: View {
                             endPoint: .bottom
                         )
                     )
-                    
+
                     LineMark(
-                        x: .value("Time", dataPoint.index),
+                        x: .value("Index", dataPoint.index),
                         y: .value("Speed", dataPoint.speed)
                     )
                     .foregroundStyle(isGreen ? Color(hex: "#3ACFB6") : Color(hex: "#9359C7"))
-                    .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                    .lineStyle(.init(lineWidth: 2, lineCap: .round))
                 }
                 .chartXAxis(.hidden)
                 .chartYAxis(.hidden)
-                .chartXScale(domain: 0...max(maxDataPoints, speedHistory.count))
-                .chartYScale(domain: 0...(speedHistory.map { $0.speed }.max() ?? 100) * 1.1)
+                .chartXScale(domain: 0 ... max(maxDataPoints, historyForChart.count))
+                .chartYScale(domain: 0 ... (historyForChart.map { $0.speed }.max() ?? 100) * 1.1)
                 .frame(height: 41)
                 .padding(.bottom, 8)
+
             } else {
                 Rectangle()
                     .fill(Color.clear)
@@ -111,10 +127,7 @@ struct UploadDownloadView: View {
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .onChange(of: speed) { newSpeed in
             updateDisplayedSpeed(newSpeed)
-            
-            if !isHistoryGiven {
-                updateSpeedHistory(newSpeed)
-            }
+            if !isHistoryGiven { updateSpeedHistory(newSpeed) }
         }
         .onChange(of: unit) { _ in
             updateUnit()
@@ -125,24 +138,27 @@ struct UploadDownloadView: View {
             updateDisplayedSpeed(speed)
         }
     }
-    
+
+    // MARK: - UPDATE LOGIC
+
     private func updateSpeedHistory(_ newSpeed: Double) {
-        let newIndex = speedHistory.isEmpty ? 0 : (speedHistory.last?.index ?? 0) + 1
-        speedHistory.append(SpeedDataPoint(index: newIndex, speed: newSpeed))
-        
-        if speedHistory.count > maxDataPoints {
-            speedHistory.removeFirst()
-            speedHistory = speedHistory.enumerated().map { index, point in
-                SpeedDataPoint(index: index, speed: point.speed)
+        let newIndex = liveHistory.isEmpty ? 0 : (liveHistory.last?.index ?? 0) + 1
+
+        liveHistory.append(.init(index: newIndex, speed: newSpeed))
+
+        if liveHistory.count > maxDataPoints {
+            liveHistory.removeFirst()
+            liveHistory = liveHistory.enumerated().map { i, p in
+                SpeedDataPoint(index: i, speed: p.speed)
             }
         }
     }
-    
+
     private func updateUnit() {
         selectedUnit = SpeedUnit(rawValue: unit) ?? .mbitPerSec
         displayedUnit = selectedUnit.displayName
     }
-    
+
     private func updateDisplayedSpeed(_ newSpeed: Double) {
         let converted = SpeedConverter.shared.convertSpeed(newSpeed, to: selectedUnit)
         displayedSpeed = String(format: "%.1f", converted)

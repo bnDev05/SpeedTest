@@ -1,10 +1,3 @@
-//
-//  FAQView.swift
-//  SpeedTest
-//
-//  Created by Behruz Norov on 13/11/25.
-//
-
 import SwiftUI
 
 struct FAQView: View {
@@ -15,9 +8,11 @@ struct FAQView: View {
             BackView()
             VStack {
                 ScrollView {
-                    ForEach(questions, id: \.id) { question in
-                        FAQQuestionCell(question: question)
-                            .padding(.horizontal, 18)
+                    VStack(spacing: 20) {
+                        ForEach(questions, id: \.id) { question in
+                            FAQQuestionCell(question: question)
+                                .padding(.horizontal, 18)
+                        }
                     }
                 }
             }

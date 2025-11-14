@@ -2,6 +2,8 @@ import SwiftUI
 
 struct TestView: View {
     @StateObject private var viewModel = TestViewModel()
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @AppStorage("firstSpeedTest") private var firstSpeedTest: Bool = true
     
     var body: some View {
         ZStack {
@@ -15,7 +17,6 @@ struct TestView: View {
             Text("The test could not be completed. Check your internet connection and try again.")
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("StartSpeedTest"))) { _ in
-            // Reset and start a new test when retry is triggered
             viewModel.resetTest()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 viewModel.startTest()
@@ -33,7 +34,14 @@ struct TestView: View {
                 speed: $viewModel.speed,
                 isConnected: viewModel.isConnected,
                 onStart: {
-                    viewModel.startTest()
+                    if subscriptionManager.isSubscribed {
+                        viewModel.startTest()
+                    } else if firstSpeedTest {
+                        firstSpeedTest = false
+                        viewModel.startTest()
+                    } else {
+                        NavigationManager.shared.push(OnboardingView(isDismissAllowed: true, step: 6))
+                    }
                 }, isDownloadSpeed: $viewModel.isDownloadSpeed
             )
             .frame(width: UIScreen.main.bounds.width - 80, height: UIScreen.main.bounds.width - 80, alignment: .center)

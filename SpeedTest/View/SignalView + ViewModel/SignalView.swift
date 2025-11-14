@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SignalView: View {
     @StateObject private var viewModel = SignalViewModel()
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @AppStorage("firstSignalTest") private var firstSignalTest: Bool = true
     var body: some View {
         ZStack {
             BackView()
@@ -16,7 +18,14 @@ struct SignalView: View {
                 topView
                 
                 NetworkDiagnosticsView(action: {
-                    viewModel.startDiagnostic()
+                    if subscriptionManager.isSubscribed {
+                        viewModel.startDiagnostic()
+                    } else if firstSignalTest {
+                        firstSignalTest = false
+                        viewModel.startDiagnostic()
+                    } else {
+                        NavigationManager.shared.push(OnboardingView(isDismissAllowed: true, step: 6))
+                    }
                 }, progressPercentage: $viewModel.overallCompletedPercentage, diagnosticStatus: $viewModel.overallNetworkStatus)
                 .frame(maxHeight: .infinity, alignment: .center)
                 

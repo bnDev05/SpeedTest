@@ -45,9 +45,9 @@ struct SpeedTestApp: App {
                             quickActionManager.quickAction = nil
                         }
                     }
-//                    .navigationDestination(isPresented: $showSubscription) {
-//                        OnboardingView(currentIndex: 4)
-//                    }
+                    .navigationDestination(isPresented: $showSubscription) {
+                        OnboardingView(step: 6)
+                    }
                 }
             }
     }

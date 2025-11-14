@@ -10,7 +10,9 @@ struct ResultView: View {
     @State private var uploadPhotosRating: Int = 0
     @State private var showRateApp = false
     @State var action: (() -> Void)?
-
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @AppStorage("firstSpeedTest") private var firstSpeedTest: Bool = true
+    
     var body: some View {
         ZStack {
             BackView()
@@ -249,7 +251,14 @@ struct ResultView: View {
             NotificationCenter.default.post(name: NSNotification.Name("StartSpeedTest"), object: nil)
         }
         if let action {
-            action()
+            if subscriptionManager.isSubscribed {
+                action()
+            } else if firstSpeedTest {
+                firstSpeedTest = false
+                action()
+            } else {
+                NavigationManager.shared.push(OnboardingView(isDismissAllowed: true, step: 6))
+            }
         }
     }
 }
