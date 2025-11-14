@@ -70,6 +70,7 @@ struct ResultView: View {
                     .scaledToFit()
                     .frame(width: 36, height: 36, alignment: .center)
             }
+            .buttonStyle(HapticButtonStyle())
 
         }
     }
@@ -237,6 +238,7 @@ struct ResultView: View {
                 .frame(height: 62)
                 .padding(.horizontal)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Text("A repeat test will give more accurate results")
                 .foregroundStyle(.white.opacity(0.5))

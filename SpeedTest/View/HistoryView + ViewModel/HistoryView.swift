@@ -49,6 +49,8 @@ struct HistoryView: View {
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.onest(.semibold, size: 18))
             }
+            .buttonStyle(HapticButtonStyle())
+
         }
     }
     
@@ -74,6 +76,8 @@ struct HistoryView: View {
                         .foregroundStyle(viewModel.isInEdit ? Color(hex: "#FF383C") : Color(hex: "#787F88"))
                         .font(.onest(.semibold, size: 16))
                 }
+                .buttonStyle(HapticButtonStyle())
+
             }
             
             Button {
@@ -99,6 +103,8 @@ struct HistoryView: View {
                         .foregroundStyle(Color(hex: "#292F38"))
                 )
             }
+            .buttonStyle(HapticButtonStyle())
+
         }
     }
     

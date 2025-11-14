@@ -326,7 +326,7 @@ struct StartButtonView: View {
                         .foregroundColor(.white)
                 }
             }
-            .buttonStyle(PlainButtonStyle())
+            .buttonStyle(HapticButtonStyle())
         }
     }
 }
@@ -379,6 +379,7 @@ struct NetworkDiagnosticsView: View {
                     .foregroundColor(.white)
             }
         }
+        .buttonStyle(HapticButtonStyle())
         .disabled(diagnosticStatus != 0)
     }
 }
@@ -512,7 +513,7 @@ struct ErrorButtonView: View {
                 }
             }
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(HapticButtonStyle())
     }
 }
 

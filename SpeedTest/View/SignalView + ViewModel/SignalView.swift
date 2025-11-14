@@ -117,6 +117,7 @@ struct SignalView: View {
                         .scaledToFit()
                         .frame(width: 36, height: 36, alignment: .center)
                 }
+                .buttonStyle(HapticButtonStyle())
             }
         }
     }

@@ -23,6 +23,7 @@ struct TabView: View {
                             }
                         }
                     }
+                    .buttonStyle(HapticButtonStyle())
                     .padding(.horizontal, 8)
                     .padding(.vertical, 8)
                     .background(Color(hex: "040A15").overlay(content: {
@@ -44,6 +45,7 @@ struct TabView: View {
                             }
                         }
                     }
+                    .buttonStyle(HapticButtonStyle())
                     .padding(.horizontal, 8)
                     .padding(.vertical, 8)
                     .background(Color(hex: "040A15").overlay(content: {
@@ -100,7 +102,7 @@ struct TabButton: View {
             )
             .clipShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(HapticButtonStyle())
     }
 }
 

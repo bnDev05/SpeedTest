@@ -51,6 +51,7 @@ struct FAQQuestionCell: View {
                         .fontWeight(.bold)
                         .foregroundStyle(Color(hex: "#787F88"))
                 }
+                .buttonStyle(HapticButtonStyle())
             }
             
             if isExtended {

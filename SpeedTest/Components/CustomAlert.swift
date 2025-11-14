@@ -36,6 +36,7 @@ struct CustomAlertView: View {
                                     .background(Color.gray.opacity(0.2))
                                     .clipShape(Capsule())
                             }
+                            .buttonStyle(HapticButtonStyle())
                         }
                     }
                     .padding(.horizontal, 16)
@@ -67,6 +68,8 @@ struct CustomAlertView: View {
                                     .background(Color.gray.opacity(0.2))
                                     .clipShape(Capsule())
                             }
+                            .buttonStyle(HapticButtonStyle())
+
                         }
                     }
                     .padding(.horizontal, 16)

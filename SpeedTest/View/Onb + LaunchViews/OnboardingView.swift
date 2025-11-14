@@ -95,6 +95,7 @@ struct OnboardingView: View {
             Button("OK".localized, role: .cancel) {
                 
             }
+            .buttonStyle(HapticButtonStyle())
 
         } message: {
             Text(alertMessage)
@@ -202,6 +203,8 @@ struct OnboardingView: View {
                 .padding(.bottom, 10)
                 .padding(.top, -10)
             }
+            .buttonStyle(HapticButtonStyle())
+
             .disabled(!viewModel.showActive(step: step))
         }
     }
@@ -213,6 +216,7 @@ struct OnboardingView: View {
             } label: {
                 Text("Privacy".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 Task {
@@ -221,12 +225,14 @@ struct OnboardingView: View {
             } label: {
                 Text("Restore".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
                 Text("Terms".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             if step == 6 {
                 Button {
@@ -238,6 +244,8 @@ struct OnboardingView: View {
                 } label: {
                     Text("Not Now".localized)
                 }
+                .buttonStyle(HapticButtonStyle())
+
             }
         }
         .lineLimit(1)

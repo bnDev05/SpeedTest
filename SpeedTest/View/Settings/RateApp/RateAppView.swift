@@ -57,6 +57,7 @@ struct RateAppView: View {
                         .foregroundStyle(.white)
                 }
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 isRateApp = false
@@ -66,7 +67,7 @@ struct RateAppView: View {
                     .foregroundStyle(Color(hex: "#919591"))
                     .frame(height: 53)
             }
-
+            .buttonStyle(HapticButtonStyle())
         }
         .padding(20)
         .padding(.vertical, 10)

@@ -69,6 +69,8 @@ struct SubscriptionView: View {
                         .scaledToFit()
                         .frame(width: 36, height: 36, alignment: .center)
                 }
+                .buttonStyle(HapticButtonStyle())
+
             }
         }
     }
@@ -124,6 +126,7 @@ struct SubscriptionView: View {
                     await viewModel.fetchAllPaywall()
                 }
             }
+            .buttonStyle(HapticButtonStyle())
             .foregroundColor(Color(hex: "#3795FB"))
             .font(.poppins(.semibold, size: 16))
             .padding(.top)
@@ -164,6 +167,7 @@ struct SubscriptionView: View {
                                 let price = viewModel.formatPrice(product)
                                 plansCell(title: title, price: "\(price)/\(productType == "yearly" ? "year".localized.capitalized : "week".localized.capitalized)", isSelected: (viewModel.selectedProduct?.productId == product.productId))
                             }
+                            .buttonStyle(HapticButtonStyle())
                         }
                     }
                     .padding(.bottom, 20)
@@ -203,6 +207,8 @@ struct SubscriptionView: View {
                                 plansCell(title: title, price: priceWithPeriod, isSelected: (viewModel.selectedProduct?.productId == product.productId))
 
                             }
+                            .buttonStyle(HapticButtonStyle())
+
                         }
                     }
                     .padding(.horizontal)
@@ -341,6 +347,7 @@ struct SubscriptionView: View {
             } label: {
                 Text("Privacy".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 Task {
@@ -349,12 +356,14 @@ struct SubscriptionView: View {
             } label: {
                 Text("Restore".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
                 Text("Terms".localized)
             }
+            .buttonStyle(HapticButtonStyle())
         }
         .foregroundStyle(Color(hex: "#B8B1AF"))
         .font(.poppins(.medium, size: 12))
@@ -383,6 +392,7 @@ struct SubscriptionView: View {
             }
             .padding(.bottom, 20)
         }
+        .buttonStyle(HapticButtonStyle())
         .disabled(viewModel.isLoading || viewModel.selectedProduct == nil)
         .opacity((viewModel.isLoading || viewModel.selectedProduct == nil) ? 0.6 : 1.0)
     }

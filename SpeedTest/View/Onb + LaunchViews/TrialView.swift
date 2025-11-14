@@ -27,6 +27,8 @@ struct TrialView: View {
                                 .frame(width: 36, height: 36, alignment: .center)
                                 .padding()
                         }
+                        .buttonStyle(HapticButtonStyle())
+
                     }
                 
                 Text("Start your ")
@@ -106,7 +108,8 @@ struct TrialView: View {
                     .padding(.bottom, 10)
                     .padding(.top, 10)
                 }
-                
+                .buttonStyle(HapticButtonStyle())
+
                 bottomButtons
             }
         }
@@ -119,6 +122,7 @@ struct TrialView: View {
             } label: {
                 Text("Privacy".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 Task {
@@ -127,12 +131,14 @@ struct TrialView: View {
             } label: {
                 Text("Restore".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
                 Text("Terms".localized)
             }
+            .buttonStyle(HapticButtonStyle())
 
             Button {
                 dismiss()
@@ -140,6 +146,7 @@ struct TrialView: View {
             } label: {
                 Text("Not Now".localized)
             }
+            .buttonStyle(HapticButtonStyle())
         }
         .lineLimit(1)
         .foregroundStyle(Color(hex: "#787F88"))

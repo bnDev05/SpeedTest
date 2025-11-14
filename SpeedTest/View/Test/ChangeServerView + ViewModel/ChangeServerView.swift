@@ -36,14 +36,17 @@ struct ChangeServerView: View {
                             .padding()
                     } else {
                         ForEach(viewModel.filteredServers, id: \.id) { server in
-                            serverCell(server: server)
-                                .onTapGesture {
-                                    viewModel.selectServer(server)
-                                }
+                            Button {
+                                viewModel.selectServer(server)
+                            } label: {
+                                serverCell(server: server)
+
+                            }
+                            .buttonStyle(HapticButtonStyle())
                         }
                     }
                 }
-                .padding(.top, 2)
+                .padding(.all, 2)
             }
         }
         .padding(.horizontal)
@@ -68,7 +71,8 @@ struct ChangeServerView: View {
                         .scaledToFit()
                         .frame(width: 36, height: 36, alignment: .center)
                 }
-                
+                .buttonStyle(HapticButtonStyle())
+
             }
         }
     }

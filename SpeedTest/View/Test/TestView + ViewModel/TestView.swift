@@ -13,6 +13,8 @@ struct TestView: View {
         .navigationBarBackButtonHidden()
         .alert("Error", isPresented: $viewModel.showErrorAlert) {
             Button("OK", role: .cancel) {}
+                .buttonStyle(HapticButtonStyle())
+
         } message: {
             Text("The test could not be completed. Check your internet connection and try again.")
         }
@@ -128,6 +130,8 @@ struct TestView: View {
                                 .font(.poppins(.medium, size: 16))
                                 .foregroundStyle(Color(hex: "#4599F5"))
                         }
+                        .buttonStyle(HapticButtonStyle())
+
                     }
                 }
             }

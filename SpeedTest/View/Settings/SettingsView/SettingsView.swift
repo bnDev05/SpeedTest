@@ -30,50 +30,58 @@ struct SettingsView: View {
                         } label: {
                             settingsCell(icon: .settingsUnitIcon, title: "Unit", unitString: unitStrings[unit])
                         }
-                    
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             presentAlert = true
                             isUnit = false
                         } label: {
                             settingsCell(icon: .settingsDialScaleIcon, title: "Dial scale", unitString: dialScaleAmounts[dialScale])
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             NavigationManager.shared.present(SubscriptionView(), isFullScreenCover: false, isCrossDissolve: false)
                         } label: {
                             settingsCell(icon: .settingsSubscriptionPlansIcon, title: "Subscription plans", unitString: nil)
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             showIconsSwitch = true
                             tabAppears = false
                         } label: {
                             settingsCell(icon: .settingsFAQIcon, title: "Replace icon", unitString: nil)
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             NavigationManager.shared.push(FAQView())
                         } label: {
                             settingsCell(icon: .settingsReplaceIconImace, title: "FAQ", unitString: nil)
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             shareApp()
                         } label: {
                             settingsCell(icon: .settingsShareLinkImace, title: "Share link", unitString: nil)
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             openURL(Config.privacy.rawValue)
                         } label: {
                             settingsCell(icon: .settingsPrivacyIcon, title: "Privacy Policy", unitString: nil)
                         }
-                        
+                        .buttonStyle(HapticButtonStyle())
+
                         Button {
                             openURL(Config.terms.rawValue)
                         } label: {
                             settingsCell(icon: .settingsTermsIcon, title: "Terms of Use", unitString: nil)
                         }
+                        .buttonStyle(HapticButtonStyle())
                     }
                     .padding(.vertical, 20)
                 }
@@ -115,7 +123,7 @@ struct SettingsView: View {
     
     private var proButton: some View {
         Button {
-            
+            NavigationManager.shared.push(OnboardingView(isDismissAllowed: true, step: 6))
         } label: {
             Image(.settingsProButtonBack)
                 .resizable()
@@ -147,6 +155,7 @@ struct SettingsView: View {
                 .shadow(color: Color(hex: "#245BEB").opacity(0.47), radius: 9.2, x: 0, y: 4)
             
         }
+        .buttonStyle(HapticButtonStyle())
     }
     
     @ViewBuilder
@@ -212,6 +221,7 @@ struct SettingsView: View {
                              .frame(width: 36, height: 36, alignment: .center)
                              .padding()
                      }
+                     .buttonStyle(HapticButtonStyle())
                  }
                  
                  Text("Replace icon".localized)
@@ -221,22 +231,25 @@ struct SettingsView: View {
                  
                  HStack {
                      ForEach(CustomAppIcon.allCases) { icon in
-                         Image(icon == .defaultIcon ? .appIcon0 : .appIcon1)
-                             .resizable()
-                             .scaledToFit()
-                             .frame(width: (UIScreen.main.bounds.width - 50) / 2, height: (UIScreen.main.bounds.width - 50) / 2)
-                             .clipShape(RoundedRectangle(cornerRadius: 21))
-                             .overlay {
-                                 RoundedRectangle(cornerRadius: 20)
-                                     .stroke(currentSelection == icon ? Color(hex: "#FFFFFF") : Color(hex: "#FFFFFF"), lineWidth: currentSelection == icon ? 4 : 0)
+                         Button {
+                             withAnimation {
+                                 currentSelection = icon
+                                 AppIconManager.shared.setAppIcon(to: icon)
+                                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                              }
-                             .onTapGesture {
-                                 withAnimation {
-                                     currentSelection = icon
-                                     AppIconManager.shared.setAppIcon(to: icon)
-                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                         } label: {
+                             Image(icon == .defaultIcon ? .appIcon0 : .appIcon1)
+                                 .resizable()
+                                 .scaledToFit()
+                                 .frame(width: (UIScreen.main.bounds.width - 50) / 2, height: (UIScreen.main.bounds.width - 50) / 2)
+                                 .clipShape(RoundedRectangle(cornerRadius: 21))
+                                 .overlay {
+                                     RoundedRectangle(cornerRadius: 20)
+                                         .stroke(currentSelection == icon ? Color(hex: "#FFFFFF") : Color(hex: "#FFFFFF"), lineWidth: currentSelection == icon ? 4 : 0)
                                  }
-                             }
+                         }
+                         .buttonStyle(HapticButtonStyle())
+
                      }
                  }
              }
