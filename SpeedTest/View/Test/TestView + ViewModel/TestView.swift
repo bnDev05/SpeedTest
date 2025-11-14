@@ -16,7 +16,7 @@ struct TestView: View {
                 .buttonStyle(HapticButtonStyle())
 
         } message: {
-            Text("The test could not be completed. Check your internet connection and try again.")
+            Text("The test could not be completed. Check your internet connection and try again.".localized)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("StartSpeedTest"))) { _ in
             viewModel.resetTest()

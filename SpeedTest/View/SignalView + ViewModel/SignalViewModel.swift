@@ -13,11 +13,11 @@ final class SignalViewModel: ObservableObject {
     @Published var serverConnectionStatus: Int = 0
     
     // Status details
-    @Published var networkName: String = "Network name"
-    @Published var signalStrength: String = "Normal"
-    @Published var dnsStatusText: String = "Normal"
-    @Published var internetConnectionText: String = "Normal"
-    @Published var serverConnectionText: String = "Normal"
+    @Published var networkName: String = "Network name".localized
+    @Published var signalStrength: String = "Normal".localized
+    @Published var dnsStatusText: String = "Normal".localized
+    @Published var internetConnectionText: String = "Normal".localized
+    @Published var serverConnectionText: String = "Normal".localized
     
     // Alert handling
     @Published var showAlert: Bool = false
@@ -28,20 +28,6 @@ final class SignalViewModel: ObservableObject {
     private let monitorQueue = DispatchQueue(label: "NetworkMonitor")
     private var cancellables = Set<AnyCancellable>()
     private var progressTimer: Timer?
-    
-//    init() {
-//        // Auto-start diagnostic on initialization
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//            self.startDiagnostic()
-//        }
-//    }
-//    
-//    deinit {
-//        cleanupMonitor()
-//        progressTimer?.invalidate()
-//    }
-//    
-    // MARK: - Public Methods
     
     func startDiagnostic() {
         // Reset all statuses
@@ -83,11 +69,11 @@ final class SignalViewModel: ObservableObject {
         internetConnectionStatus = 0
         serverConnectionStatus = 0
         
-        networkName = "Network name"
-        signalStrength = "Normal"
-        dnsStatusText = "Normal"
-        internetConnectionText = "Normal"
-        serverConnectionText = "Normal"
+        networkName = "Network name".localized
+        signalStrength = "Normal".localized
+        dnsStatusText = "Normal".localized
+        internetConnectionText = "Normal".localized
+        serverConnectionText = "Normal".localized
     }
     
     private func checkNetworkSettings() {
@@ -107,11 +93,11 @@ final class SignalViewModel: ObservableObject {
                 self.networkSettingsStatus = 2
                 self.checkSignalStrength()
             } else {
-                self.networkName = "No network"
+                self.networkName = "No network".localized
                 self.networkSettingsStatus = 0
                 self.showErrorAlert(
-                    title: "Network Settings Error",
-                    message: "No active network interface detected. Please check your network connection."
+                    title: "Network Settings Error".localized,
+                    message: "No active network interface detected. Please check your network connection.".localized
                 )
                 self.failDiagnostic()
             }
@@ -142,11 +128,11 @@ final class SignalViewModel: ObservableObject {
                     self.cleanupMonitor()
                     self.checkDNSStatus()
                 } else {
-                    self.signalStrength = "No signal"
+                    self.signalStrength = "No signal".localized
                     self.signalStrengthStatus = 0
                     self.showErrorAlert(
-                        title: "Signal Strength Error",
-                        message: "Network signal is not available. Please check your connection."
+                        title: "Signal Strength Error".localized,
+                        message: "Network signal is not available. Please check your connection.".localized
                     )
                     self.cleanupMonitor()
                     self.failDiagnostic()
@@ -161,11 +147,11 @@ final class SignalViewModel: ObservableObject {
             guard let self = self, !hasResponded else { return }
             hasResponded = true
             
-            self.signalStrength = "Timeout"
+            self.signalStrength = "Timeout".localized
             self.signalStrengthStatus = 0
             self.showErrorAlert(
-                title: "Signal Strength Timeout",
-                message: "Unable to detect signal strength. Please try again."
+                title: "Signal Strength Timeout".localized,
+                message: "Unable to detect signal strength. Please try again.".localized
             )
             self.cleanupMonitor()
             self.failDiagnostic()
@@ -182,15 +168,15 @@ final class SignalViewModel: ObservableObject {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 if canResolveDNS {
-                    self.dnsStatusText = latency < 50 ? "Excellent" : latency < 100 ? "Good" : "Normal"
+                    self.dnsStatusText = latency < 50 ? "Excellent".localized : latency < 100 ? "Good".localized : "Normal".localized
                     self.dnsStatus = 2
                     self.checkInternetConnection()
                 } else {
-                    self.dnsStatusText = "Failed"
+                    self.dnsStatusText = "Failed".localized
                     self.dnsStatus = 0
                     self.showErrorAlert(
-                        title: "DNS Resolution Failed",
-                        message: "Unable to resolve domain names. Check your DNS settings."
+                        title: "DNS Resolution Failed".localized,
+                        message: "Unable to resolve domain names. Check your DNS settings.".localized
                     )
                     self.failDiagnostic()
                 }
@@ -208,15 +194,15 @@ final class SignalViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 if success {
-                    self.internetConnectionText = speed < 100 ? "Excellent" : speed < 300 ? "Good" : "Normal"
+                    self.internetConnectionText = speed < 100 ? "Excellent".localized : speed < 300 ? "Good".localized : "Normal".localized
                     self.internetConnectionStatus = 2
                     self.checkServerConnection()
                 } else {
-                    self.internetConnectionText = "No connection"
+                    self.internetConnectionText = "No connection".localized
                     self.internetConnectionStatus = 0
                     self.showErrorAlert(
-                        title: "Internet Connection Failed",
-                        message: "Unable to connect to the internet. Please check your network."
+                        title: "Internet Connection Failed".localized,
+                        message: "Unable to connect to the internet. Please check your network.".localized
                     )
                     self.failDiagnostic()
                 }
@@ -234,15 +220,15 @@ final class SignalViewModel: ObservableObject {
                 guard let self = self else { return }
                 
                 if success {
-                    self.serverConnectionText = latency < 50 ? "Excellent" : latency < 150 ? "Good" : "Normal"
+                    self.serverConnectionText = latency < 50 ? "Excellent".localized : latency < 150 ? "Good".localized : "Normal".localized
                     self.serverConnectionStatus = 2
                     self.completeDiagnostic()
                 } else {
-                    self.serverConnectionText = "Unreachable"
+                    self.serverConnectionText = "Unreachable".localized
                     self.serverConnectionStatus = 0
                     self.showErrorAlert(
-                        title: "Server Connection Failed",
-                        message: "Unable to reach speed test server. Please try again later."
+                        title: "Server Connection Failed".localized,
+                        message: "Unable to reach speed test server. Please try again later.".localized
                     )
                     self.failDiagnostic()
                 }
@@ -309,12 +295,12 @@ final class SignalViewModel: ObservableObject {
                 SCNetworkReachabilityCreateWithAddress(nil, $0)
             }
         }) else {
-            return (false, "No network")
+            return (false, "No network".localized)
         }
         
         var flags: SCNetworkReachabilityFlags = []
         if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
-            return (false, "No network")
+            return (false, "No network".localized)
         }
         
         let isReachable = flags.contains(.reachable)
@@ -322,7 +308,7 @@ final class SignalViewModel: ObservableObject {
         let isConnected = isReachable && !needsConnection
         
         if !isConnected {
-            return (false, "No network")
+            return (false, "No network".localized)
         }
         
         // Try to get WiFi network name
@@ -337,21 +323,21 @@ final class SignalViewModel: ObservableObject {
         
         // If WiFi name not available, check connection type
         if flags.contains(.isWWAN) {
-            return (true, "Cellular")
+            return (true, "Cellular".localized)
         }
         
-        return (true, "Connected")
+        return (true, "Connected".localized)
     }
     
     private func evaluateSignalStrength(path: NWPath) -> String {
         if path.usesInterfaceType(.wifi) {
-            return "Good" // Could be enhanced with CoreWLAN on macOS
+            return "Good".localized // Could be enhanced with CoreWLAN on macOS
         } else if path.usesInterfaceType(.cellular) {
-            return "Normal"
+            return "Normal".localized
         } else if path.usesInterfaceType(.wiredEthernet) {
-            return "Excellent"
+            return "Excellent".localized
         }
-        return "Normal"
+        return "Normal".localized
     }
     
     private func testDNSResolution() -> (Bool, Int) {

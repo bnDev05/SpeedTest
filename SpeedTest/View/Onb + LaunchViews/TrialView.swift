@@ -31,11 +31,11 @@ struct TrialView: View {
 
                     }
                 
-                Text("Start your ")
+                Text("Start your ".localized)
                     .foregroundColor(.white)
                     .font(.poppins(.bold, size: 25))
                 +
-                Text("3-day free!")
+                Text("3-day free!".localized)
                     .foregroundColor(Color(hex: "#4599F5"))
                     .font(.poppins(.bold, size: 25))
                 
@@ -43,25 +43,25 @@ struct TrialView: View {
                     Image(.trialLeft)
                     
                     VStack {
-                        Text("Today: Get instant access")
+                        Text("Today: Get instant access".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("Get access to all premium \nfeatures for free")
+                        Text("Get access to all premium \nfeatures for free".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("Day 2: Trial reminder")
+                        Text("Day 2: Trial reminder".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("We’ll send you an email that your \ntrial is ending")
+                        Text("We’ll send you an email that your \ntrial is ending".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("Day 3: Full Subscription")
+                        Text("Day 3: Full Subscription".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text("You will be charged today, \ncancel anytime")
+                        Text("You will be charged today, \ncancel anytime".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -69,10 +69,10 @@ struct TrialView: View {
                 .frame(maxHeight: .infinity, alignment: .center)
                 .padding(.horizontal)
                 
-                Text("First 3 days free, ")
+                Text("First 3 days free, ".localized)
                     .foregroundStyle(.white)
                     .font(.poppins(.bold, size: 18))
-                Text("then \(price) per Year. Cancel at anytime")
+                Text("then \(price) per Year. Cancel at anytime".localized)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.medium, size: 14))
                 

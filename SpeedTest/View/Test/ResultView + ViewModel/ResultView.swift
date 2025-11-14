@@ -57,7 +57,7 @@ struct ResultView: View {
     
     private var topView: some View {
         HStack {
-            Text("Result")
+            Text("Result".localized)
                 .foregroundStyle(.white)
                 .font(.poppins(.semibold, size: 24))
             
@@ -95,16 +95,16 @@ struct ResultView: View {
     
     private var secondInfoView: some View {
         VStack(spacing: 0) {
-            secondInfoCell(title: "Ping", measure: "\(testResults.ping)ms")
+            secondInfoCell(title: "Ping".localized, measure: "\(testResults.ping)ms")
             Divider()
                 .background(.white.opacity(0.25))
-            secondInfoCell(title: "Provider", measure: "\(testResults.serverLocation)")
+            secondInfoCell(title: "Provider".localized, measure: "\(testResults.serverLocation)")
             Divider()
                 .background(.white.opacity(0.25))
-            secondInfoCell(title: "Internal IP", measure: "\(testResults.internalIP)")
+            secondInfoCell(title: "Internal IP".localized, measure: "\(testResults.internalIP)")
             Divider()
                 .background(.white.opacity(0.25))
-            secondInfoCell(title: "External IP", measure: "\(testResults.externalIP)")
+            secondInfoCell(title: "External IP".localized, measure: "\(testResults.externalIP)")
         }
         .background(
             RoundedRectangle(cornerRadius: 22)
@@ -131,7 +131,7 @@ struct ResultView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24, alignment: .center)
-                Text("Bandwidth")
+                Text("Bandwidth".localized)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.onest(.semibold, size: 18))
                 Spacer()
@@ -161,7 +161,7 @@ struct ResultView: View {
                 }
                 .frame(height: 20)
                 
-                Text("BY Average: \(String(format: "%.1f", byAverageValue))M")
+                Text("BY Average: \(String(format: "%.1f", byAverageValue))M".localized)
                     .foregroundStyle(.white.opacity(0.5))
                     .font(.onest(.medium, size: 16))
             }
@@ -180,20 +180,20 @@ struct ResultView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24, alignment: .center)
-                Text("Сonnection Rating")
+                Text("Сonnection Rating".localized)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.onest(.semibold, size: 18))
                 Spacer()
             }
             
             VStack(spacing: 0) {
-                connectionRatingCell(title: "Watch Videos", measure: watchVideosRating)
+                connectionRatingCell(title: "Watch Videos".localized, measure: watchVideosRating)
                 Divider()
                     .background(.white.opacity(0.25))
-                connectionRatingCell(title: "Play Games", measure: playGamesRating)
+                connectionRatingCell(title: "Play Games".localized, measure: playGamesRating)
                 Divider()
                     .background(.white.opacity(0.25))
-                connectionRatingCell(title: "Upload Photos", measure: uploadPhotosRating)
+                connectionRatingCell(title: "Upload Photos".localized, measure: uploadPhotosRating)
             }
             .background(
                 RoundedRectangle(cornerRadius: 22)
@@ -231,7 +231,7 @@ struct ResultView: View {
                 ZStack {
                     Capsule()
                         .foregroundStyle(LinearGradient.appBlueGradient)
-                    Text("Retry Test")
+                    Text("Retry Test".localized)
                         .font(.onest(.semibold, size: 18))
                         .foregroundStyle(.white)
                 }
@@ -240,7 +240,7 @@ struct ResultView: View {
             }
             .buttonStyle(HapticButtonStyle())
 
-            Text("A repeat test will give more accurate results")
+            Text("A repeat test will give more accurate results".localized)
                 .foregroundStyle(.white.opacity(0.5))
                 .font(.onest(.medium, size: 14))
         }

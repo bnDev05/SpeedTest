@@ -296,7 +296,7 @@ struct SubscriptionView: View {
     func plansCell(title: String, price: String, isSelected: Bool) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(title.capitalized)
+                Text(title.capitalized.localized)
                     .font(.poppins(.bold, size: 18))
                     .foregroundStyle(.white)
                 

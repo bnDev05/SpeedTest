@@ -85,7 +85,7 @@ struct TabButton: View {
                     .frame(width: 28, height: 28)
                     .foregroundStyle(isSelected ? .white : Color(hex: "#787F88"))
                 
-                Text(tab.title)
+                Text(tab.title.localized)
                     .font(.poppins(.medium, size: 12))
             }
             .foregroundStyle(isSelected ? .white : Color(hex: "#787F88"))

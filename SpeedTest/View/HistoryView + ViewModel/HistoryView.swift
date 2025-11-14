@@ -25,7 +25,7 @@ struct HistoryView: View {
                         .padding(.bottom, 20)
                     }
                 } else {
-                    Text("History is empty.")
+                    Text("History is empty.".localized)
                         .foregroundStyle(.white)
                         .font(.poppins(.semibold, size: 25))
                         .frame(maxHeight: .infinity, alignment: .center)
@@ -38,14 +38,14 @@ struct HistoryView: View {
     
     private var topView: some View {
         HStack {
-            Text("History")
+            Text("History".localized)
                 .foregroundStyle(.white)
                 .font(.poppins(.semibold, size: 24))
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button {
                 viewModel.isInEdit.toggle()
             } label: {
-                Text("Edit")
+                Text("Edit".localized)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.onest(.semibold, size: 18))
             }
@@ -72,7 +72,7 @@ struct HistoryView: View {
                         }))
                     }
                 } label: {
-                    Text(viewModel.isInEdit ? "Delete" : "See All")
+                    Text(viewModel.isInEdit ? "Delete".localized : "See All".localized)
                         .foregroundStyle(viewModel.isInEdit ? Color(hex: "#FF383C") : Color(hex: "#787F88"))
                         .font(.onest(.semibold, size: 16))
                 }
@@ -86,15 +86,15 @@ struct HistoryView: View {
                 }))
             } label: {
                 VStack(spacing: 18) {
-                    cellInfo(icon: .pingHistory, title: "Ping", speedInMbit: Double(item.ping), viewModel: viewModel)
+                    cellInfo(icon: .pingHistory, title: "Ping".localized, speedInMbit: Double(item.ping), viewModel: viewModel)
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
-                    cellInfo(icon: .greenDownloadIcon, title: "Download", speedInMbit: item.downloadSpeed, viewModel: viewModel)
+                    cellInfo(icon: .greenDownloadIcon, title: "Download".localized, speedInMbit: item.downloadSpeed, viewModel: viewModel)
                     Divider()
                         .background(.white.opacity(0.25))
                         .padding(.horizontal, -18)
-                    cellInfo(icon: .pinkUploadIcon, title: "Upload", speedInMbit: item.uploadSpeed, viewModel: viewModel)
+                    cellInfo(icon: .pinkUploadIcon, title: "Upload".localized, speedInMbit: item.uploadSpeed, viewModel: viewModel)
 
                 }
                 .padding(18)
@@ -146,11 +146,6 @@ struct HistoryView: View {
                 .foregroundStyle(Color(hex: "#787F88"))
         }
         .frame(height: 30)
-//        .padding(18)
-//        .background(
-//            RoundedRectangle(cornerRadius: 24)
-//                .foregroundStyle(Color(hex: "#292F38"))
-//        )
     }
     
     func formattedShort(date: Date) -> String {

@@ -16,7 +16,7 @@ struct CustomAlertView: View {
             
             if #available(iOS 26.0, *) {
                 VStack(spacing: 0) {
-                    Text(title)
+                    Text(title.localized)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.primary)
                         .padding(.top, 24)
@@ -28,7 +28,7 @@ struct CustomAlertView: View {
                                 onSelect(index)
                                 onDismiss()
                             } label: {
-                                Text(option)
+                                Text(option.localized)
                                     .font(.system(size: 17))
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
@@ -48,7 +48,7 @@ struct CustomAlertView: View {
                 .glassEffect(in: RoundedRectangle(cornerRadius: 40))
             } else {
                 VStack(spacing: 0) {
-                    Text(title)
+                    Text(title.localized)
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.primary)
                         .padding(.top, 24)
@@ -60,7 +60,7 @@ struct CustomAlertView: View {
                                 onSelect(index)
                                 onDismiss()
                             } label: {
-                                Text(option)
+                                Text(option.localized)
                                     .font(.system(size: 17))
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)

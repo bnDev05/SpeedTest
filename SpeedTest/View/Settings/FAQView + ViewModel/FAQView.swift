@@ -19,7 +19,7 @@ struct FAQView: View {
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("FAQ")
+                Text("FAQ".localized)
                     .foregroundStyle(.white)
                     .font(.poppins(.bold, size: 24))
             }
@@ -33,7 +33,7 @@ struct FAQQuestionCell: View {
     var body: some View {
         VStack {
             HStack(spacing: 10) {
-                Text(question.question)
+                Text(question.question.localized)
                     .font(.onest(.semibold, size: 18))
                     .foregroundStyle(.white)
                     .lineLimit(3)
@@ -67,7 +67,7 @@ struct FAQQuestionCell: View {
                                 .padding(.vertical)
                                 .padding(.trailing)
                         }
-                        Text(question.answerStrings[text])
+                        Text(question.answerStrings[text].localized)
                             .font(.onest(.medium, size: 16))
                             .foregroundStyle(.white)
                             .lineLimit(100)

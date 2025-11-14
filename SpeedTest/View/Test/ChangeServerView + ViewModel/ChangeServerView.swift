@@ -20,16 +20,16 @@ struct ChangeServerView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     if viewModel.isLoading {
-                        ProgressView("Loading servers...")
+                        ProgressView("Loading servers...".localized)
                             .foregroundColor(.white)
                             .padding()
                     } else if viewModel.filteredServers.isEmpty && !viewModel.servers.isEmpty {
-                        Text("No servers found")
+                        Text("No servers found".localized)
                             .font(.poppins(.medium, size: 16))
                             .foregroundColor(Color(hex: "#787F88"))
                             .padding()
                     } else if viewModel.servers.isEmpty {
-                        Text("No servers available. Check your connection.")
+                        Text("No servers available. Check your connection.".localized)
                             .font(.poppins(.medium, size: 16))
                             .foregroundColor(Color(hex: "#787F88"))
                             .multilineTextAlignment(.center)

@@ -34,7 +34,7 @@ struct SignalView: View {
                         networkStatus: $viewModel.networkSettingsStatus,
                         isNetworkSettings: true,
                         icon: .networkSettingsIcon,
-                        title: "Network Settings",
+                        title: "Network Settings".localized,
                         subtitle: viewModel.networkName
                     )
                     
@@ -45,7 +45,7 @@ struct SignalView: View {
                     NetworkItemView(
                         networkStatus: $viewModel.signalStrengthStatus,
                         icon: .signalStrengthIcon,
-                        title: "Signal Strength",
+                        title: "Signal Strength".localized,
                         subtitle: viewModel.signalStrength
                     )
                     
@@ -56,7 +56,7 @@ struct SignalView: View {
                     NetworkItemView(
                         networkStatus: $viewModel.dnsStatus,
                         icon: .dnsStatusIcon,
-                        title: "DNS Status",
+                        title: "DNS Status".localized,
                         subtitle: viewModel.dnsStatusText
                     )
                     
@@ -67,7 +67,7 @@ struct SignalView: View {
                     NetworkItemView(
                         networkStatus: $viewModel.internetConnectionStatus,
                         icon: .internetConnectionStatusIcon,
-                        title: "Internet Connection",
+                        title: "Internet Connection".localized,
                         subtitle: viewModel.internetConnectionText
                     )
                     
@@ -78,7 +78,7 @@ struct SignalView: View {
                     NetworkItemView(
                         networkStatus: $viewModel.serverConnectionStatus,
                         icon: .serverConnectionIcon,
-                        title: "Server Connection",
+                        title: "Server Connection".localized,
                         subtitle: viewModel.serverConnectionText
                     )
                 }
@@ -104,7 +104,7 @@ struct SignalView: View {
     
     private var topView: some View {
         HStack {
-            Text("Network Diagnostic")
+            Text("Network Diagnostic".localized)
                 .foregroundStyle(.white)
                 .font(.poppins(.semibold, size: 24))
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -141,7 +141,7 @@ struct NetworkItemView: View {
                 .frame(width: 30, height: 30)
             
             VStack(alignment: .leading) {
-                Text(title)
+                Text(title.localized)
                     .font(.onest(.semibold, size: 18))
                     .foregroundStyle(.white)
                 

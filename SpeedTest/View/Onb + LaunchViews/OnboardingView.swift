@@ -116,7 +116,7 @@ struct OnboardingView: View {
 
             if step == 6 {
                 if isPriceLoading {
-                    Text("•••/year")
+                    Text("•••/year".localized)
                         .font(.poppins(.medium, size: 14))
                         .foregroundStyle(Color(hex: "#787F88"))
                         .shimmer()
@@ -129,7 +129,7 @@ struct OnboardingView: View {
                         .padding(.horizontal, 40)
                 }
             } else {
-                Text(subtitles[step])
+                Text(subtitles[step].localized)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.medium, size: 14))

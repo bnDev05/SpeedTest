@@ -93,7 +93,7 @@ struct SettingsView: View {
             }
             if presentAlert {
                 CustomAlertView(
-                    title: isUnit ? "Select a unit of measurement" : "Dial scale",
+                    title: isUnit ? "Select a unit of measurement".localized : "Dial scale".localized,
                     options: isUnit ? unitStrings : dialScaleAmounts,
                     onSelect: { index in
                         if isUnit {
@@ -115,7 +115,7 @@ struct SettingsView: View {
     }
     
     private var topView: some View {
-        Text("Settings")
+        Text("Settings".localized)
             .foregroundStyle(.white)
             .font(.poppins(.semibold, size: 24))
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -131,15 +131,15 @@ struct SettingsView: View {
                 .overlay {
                     VStack(spacing: 10) {
                         VStack(spacing: 6) {
-                            Text("Get Unlimited access")
+                            Text("Get Unlimited access".localized)
                                 .font(.poppins(.bold, size: 22))
                                 .foregroundStyle(.white)
-                            Text("to all application features")
+                            Text("to all application features".localized)
                                 .font(.poppins(.medium, size: 17))
                                 .foregroundStyle(.white)
                         }
                         Spacer()
-                        Text("Start Now")
+                        Text("Start Now".localized)
                             .font(.poppins(.semibold, size: 18))
                             .foregroundStyle(Color(hex: "#00080B"))
                             .padding(.vertical, 14)
@@ -166,12 +166,12 @@ struct SettingsView: View {
                 .scaledToFit()
                 .frame(width: 30, height: 30, alignment: .center)
             
-            Text(title)
+            Text(title.localized)
                 .font(.onest(.semibold, size: 18))
                 .foregroundStyle(.white)
             Spacer()
             if let unitString {
-                Text(unitString)
+                Text(unitString.localized)
                     .font(.poppins(.medium, size: 18))
                     .foregroundStyle(.white)
                 Image(systemName: "chevron.down")

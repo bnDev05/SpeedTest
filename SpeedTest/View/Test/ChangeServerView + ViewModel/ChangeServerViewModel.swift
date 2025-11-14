@@ -9,9 +9,9 @@ final class ChangeServerViewModel: NSObject, ObservableObject {
     @Published var filteredServers: [ServerModel] = []
     @Published var selectedServer: ServerModel = ServerModel(
         id: UUID(),
-        name: "Loading...",
+        name: "Loading...".localized,
         host: "speedtest.net",
-        provider: "Loading...",
+        provider: "Loading...".localized,
         city: "...",
         country: "...",
         countryCode: "WW",

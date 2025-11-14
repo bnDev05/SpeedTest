@@ -1,7 +1,279 @@
-/* 
+/*
   LocalizationNew.strings
   SpeedTest
-
+  
   Created by Behruz Norov on 14/11/25.
   
 */
+
+/* Onboarding */
+"Check your \n" = "Check your \n";
+"Internet Speed" = "Internet Speed";
+"Run a " = "Run a ";
+"diagnostic " = "diagnostic ";
+"on\n your internet" = "on\n your internet";
+"Loved " = "Loved ";
+"by thousands\n" = "by thousands\n";
+"of users" = "of users";
+"Save " = "Save ";
+"Your Network\n Test Results" = "Your Network\n Test Results";
+"How do you " = "How do you ";
+"connect\n" = "connect\n";
+"to the internet?" = "to the internet?";
+"How often " = "How often ";
+"do you\n test your speed?" = "do you\n test your speed?";
+"Upgrade " = "Upgrade ";
+"to the full\n version" = "to the full\n version";
+"Find out your download and upload\n speeds in seconds" = "Find out your download and upload\n speeds in seconds";
+"Scan your network security and find\n the best access points" = "Scan your network security and find\n the best access points";
+"Real reviews from users who loved\n our product from day one" = "Real reviews from users who loved\n our product from day one";
+"Compare Wi-Fi, mobile, and \nmore — save every speed test" = "Compare Wi-Fi, mobile, and \nmore — save every speed test";
+"Indicate which connection you \nuse most often" = "Indicate which connection you \nuse most often";
+"Your answer helps us show the \nmost useful insights" = "Your answer helps us show the \nmost useful insights";
+"Treat yourself to stable, fast internet—without ads—for only" = "Treat yourself to stable, fast internet—without ads—for only";
+"per" = "per";
+"year" = "year";
+"Continue" = "Continue";
+"Privacy" = "Privacy";
+"Restore" = "Restore";
+"Terms" = "Terms";
+"Not Now" = "Not Now";
+"Restore Successful" = "Restore Successful";
+"Your previous purchases have been successfully restored." = "Your previous purchases have been successfully restored.";
+"Restore Failed" = "Restore Failed";
+"No active subscription found or restore failed. Please try again later." = "No active subscription found or restore failed. Please try again later.";
+"OK" = "OK";
+
+/* Connection Types */
+"Home Wi-Fi" = "Home Wi-Fi";
+"Mobile internet" = "Mobile internet";
+"Wired connection" = "Wired connection";
+"Public Wi-Fi" = "Public Wi-Fi";
+
+/* Test Frequency */
+"First time" = "First time";
+"Once a day or more often" = "Once a day or more often";
+"Several times a week" = "Several times a week";
+"Only when problems arise" = "Only when problems arise";
+
+/* Trial View */
+"Start your " = "Start your ";
+"3-day free!" = "3-day free!";
+"Today: Get instant access" = "Today: Get instant access";
+"Get access to all premium \nfeatures for free" = "Get access to all premium \nfeatures for free";
+"Day 2: Trial reminder" = "Day 2: Trial reminder";
+"We'll send you an email that your \ntrial is ending" = "We'll send you an email that your \ntrial is ending";
+"Day 3: Full Subscription" = "Day 3: Full Subscription";
+"You will be charged today, \ncancel anytime" = "You will be charged today, \ncancel anytime";
+"First 3 days free, " = "First 3 days free, ";
+"then %@ per Year. Cancel at anytime" = "then %@ per Year. Cancel at anytime";
+
+/* Tab Titles */
+"Test" = "Test";
+"Signal" = "Signal";
+"History" = "History";
+"Settings" = "Settings";
+
+/* Speed Test View */
+"Speed Test" = "Speed Test";
+"Ping:" = "Ping:";
+"Jitter:" = "Jitter:";
+"Loss:" = "Loss:";
+"Download" = "Download";
+"Upload" = "Upload";
+"Start" = "Start";
+"You are connected \nto the Internet" = "You are connected \nto the Internet";
+"Check your connection:\nthe speed test may fail" = "Check your connection:\nthe speed test may fail";
+"Connection..." = "Connection...";
+"Ready" = "Ready";
+"Change testing server" = "Change testing server";
+"Error" = "Error";
+"The test could not be completed. Check your internet connection and try again." = "The test could not be completed. Check your internet connection and try again.";
+/* Result View */
+"Result" = "Result";
+"Ping" = "Ping";
+"Provider" = "Provider";
+"Internal IP" = "Internal IP";
+"External IP" = "External IP";
+"Bandwidth" = "Bandwidth";
+"BY Average: %@M" = "BY Average: %@M";
+"Сonnection Rating" = "Connection Rating";
+"Watch Videos" = "Watch Videos";
+"Play Games" = "Play Games";
+"Upload Photos" = "Upload Photos";
+"Retry Test" = "Retry Test";
+"A repeat test will give more accurate results" = "A repeat test will give more accurate results";
+
+/* History View */
+"History is empty." = "History is empty.";
+"Edit" = "Edit";
+"Delete" = "Delete";
+"See All" = "See All";
+
+/* Signal/Network Diagnostic View */
+"Network Diagnostic" = "Network Diagnostic";
+"Network Settings" = "Network Settings";
+"Signal Strength" = "Signal Strength";
+"DNS Status" = "DNS Status";
+"Internet Connection" = "Internet Connection";
+"Server Connection" = "Server Connection";
+"Network name" = "Network name";
+"Normal" = "Normal";
+"No network" = "No network";
+"No signal" = "No signal";
+"Timeout" = "Timeout";
+"Excellent" = "Excellent";
+"Good" = "Good";
+"Failed" = "Failed";
+"No connection" = "No connection";
+"Unreachable" = "Unreachable";
+"Network Settings Error" = "Network Settings Error";
+"No active network interface detected. Please check your network connection." = "No active network interface detected. Please check your network connection.";
+"Signal Strength Error" = "Signal Strength Error";
+"Network signal is not available. Please check your connection." = "Network signal is not available. Please check your connection.";
+"Signal Strength Timeout" = "Signal Strength Timeout";
+"Unable to detect signal strength. Please try again." = "Unable to detect signal strength. Please try again.";
+"DNS Resolution Failed" = "DNS Resolution Failed";
+"Unable to resolve domain names. Check your DNS settings." = "Unable to resolve domain names. Check your DNS settings.";
+"Internet Connection Failed" = "Internet Connection Failed";
+"Unable to connect to the internet. Please check your network." = "Unable to connect to the internet. Please check your network.";
+"Server Connection Failed" = "Server Connection Failed";
+"Unable to reach speed test server. Please try again later." = "Unable to reach speed test server. Please try again later.";
+
+/* Settings View */
+"Unit" = "Unit";
+"Dial scale" = "Dial scale";
+"Subscription plans" = "Subscription plans";
+"Replace icon" = "Replace icon";
+"FAQ" = "FAQ";
+"Share link" = "Share link";
+"Privacy Policy" = "Privacy Policy";
+"Terms of Use" = "Terms of Use";
+"Select a unit of measurement" = "Select a unit of measurement";
+"Get Unlimited access" = "Get Unlimited access";
+"to all application features" = "to all application features";
+"Start Now" = "Start Now";
+
+/* Change Server View */
+"Change server" = "Change server";
+"Server search" = "Server search";
+"Select automatically" = "Select automatically";
+"Loading servers..." = "Loading servers...";
+"No servers found" = "No servers found";
+"No servers available. Check your connection." = "No servers available. Check your connection.";
+/* Subscription View */
+"Subscription plans" = "Subscription plans";
+"Loading subscription plans..." = "Loading subscription plans...";
+"Failed to load subscription plans" = "Failed to load subscription plans";
+"Please check:" = "Please check:";
+"• Product IDs match in App Store Connect" = "• Product IDs match in App Store Connect";
+"• Products are approved and available" = "• Products are approved and available";
+"• Apphud dashboard has correct product IDs" = "• Apphud dashboard has correct product IDs";
+"• Using correct placement identifier" = "• Using correct placement identifier";
+"Retry" = "Retry";
+"Unlimited number of tests" = "Unlimited number of tests";
+"More accurate results" = "More accurate results";
+"Ad-Free experience" = "Ad-Free experience";
+"No valid subscription products available" = "No valid subscription products available";
+"yearly" = "yearly";
+"3_day_free_trial" = "3-day free trial";
+"weekly" = "weekly";
+"daily" = "daily";
+"monthly" = "monthly";
+"week" = "week";
+"day" = "day";
+"month" = "month";
+"Try For Free" = "Try For Free";
+"Please select a subscription plan" = "Please select a subscription plan";
+
+/* Rate App View */
+"How was your experience?" = "How was your experience?";
+"We truly value your input—it helps \nus continuously improve" = "We truly value your input—it helps \nus continuously improve";
+"Write a review" = "Write a review";
+"Not now" = "Not now";
+
+/* FAQ Questions */
+"How to resolve an internet connection issue?" = "How to resolve an internet connection issue?";
+"How to fix a DNS error?" = "How to fix a DNS error?";
+"How to fix a weak signal?" = "How to fix a weak signal?";
+"What do these terms mean?" = "What do these terms mean?";
+"What is the purpose of changing the server?" = "What is the purpose of changing the server?";
+"Introduction to Ping Test" = "Introduction to Ping Test";
+
+"Open the Settings app → Wi-Fi, tap the details of your current Wi-Fi network, and ensure that Configure IP is set to Automatic, Configure DNS is set to Automatic, and Configure Proxy is Off." = "Open the Settings app → Wi-Fi, tap the details of your current Wi-Fi network, and ensure that Configure IP is set to Automatic, Configure DNS is set to Automatic, and Configure Proxy is Off.";
+"Open the Settings app, turn off Wi-Fi or Cellular Data, wait a few seconds, then turn it back on." = "Open the Settings app, turn off Wi-Fi or Cellular Data, wait a few seconds, then turn it back on.";
+"Open Settings → VPN and disable any active VPN connections." = "Open Settings → VPN and disable any active VPN connections.";
+"Try turning off your device or your router, then restart it." = "Try turning off your device or your router, then restart it.";
+"Check whether your internet service subscription has expired—you may need to log in again or renew your plan." = "Check whether your internet service subscription has expired—you may need to log in again or renew your plan.";
+
+"Open Settings → Wi-Fi, check the details of your connected Wi-Fi network, and make sure that Configure DNS is set to Automatic and Configure Proxy is set to Off." = "Open Settings → Wi-Fi, check the details of your connected Wi-Fi network, and make sure that Configure DNS is set to Automatic and Configure Proxy is set to Off.";
+
+"If your Wi-Fi signal is weak or unstable, try the following:
+• Turn off and restart your phone or tablet, then reconnect to Wi-Fi.
+• If you’re using a home router, turn it off for about 10 seconds, then power it back on.
+• If you’re connected to a public Wi-Fi network, try moving to a different location to avoid signal blockage from buildings.
+• Attempt to connect to another available and reliable Wi-Fi network.
+If your mobile network signal is weak or unstable, we recommend:
+• Turning off and restarting your phone or tablet, then reconnecting to the mobile network.
+• Changing your location to avoid signal obstruction caused by buildings or large crowds.
+• Closing other background apps running on your phone." =
+"If your Wi-Fi signal is weak or unstable, try the following:
+• Turn off and restart your phone or tablet, then reconnect to Wi-Fi.
+• If you’re using a home router, turn it off for about 10 seconds, then power it back on.
+• If you’re connected to a public Wi-Fi network, try moving to a different location to avoid signal blockage from buildings.
+• Attempt to connect to another available and reliable Wi-Fi network.
+If your mobile network signal is weak or unstable, we recommend:
+• Turning off and restarting your phone or tablet, then reconnecting to the mobile network.
+• Changing your location to avoid signal obstruction caused by buildings or large crowds.
+• Closing other background apps running on your phone.";
+
+"DNS:
+Domain Name Servers (DNS) are the Internet’s equivalent of a phone book. They maintain a directory of domain names (e.g., www.example.com) and translate them into Internet Protocol (IP) addresses (e.g., 192.0.2.1). This translation is necessary because, while domain names are easy for people to remember, computers and other devices access websites using IP addresses.
+Internet Connection:
+An internet connection is the ability to link to the Internet using devices such as computers, smartphones, or other terminals, thereby enabling access to online services like email and the World Wide Web.
+Server Connection:
+The app requests speed-test resources from a server. If the connection between client devices (such as your cellphone) and the server is unstable or fails, the app won’t be able to retrieve the necessary resources, resulting in a failed speed test." =
+"DNS:
+Domain Name Servers (DNS) are the Internet’s equivalent of a phone book. They maintain a directory of domain names (e.g., www.example.com) and translate them into Internet Protocol (IP) addresses (e.g., 192.0.2.1). This translation is necessary because, while domain names are easy for people to remember, computers and other devices access websites using IP addresses.
+Internet Connection:
+An internet connection is the ability to link to the Internet using devices such as computers, smartphones, or other terminals, thereby enabling access to online services like email and the World Wide Web.
+Server Connection:
+The app requests speed-test resources from a server. If the connection between client devices (such as your cellphone) and the server is unstable or fails, the app won’t be able to retrieve the necessary resources, resulting in a failed speed test.";
+
+"Since many websites and streaming services host their content on servers located in different regions, speed test results from a single server may be inaccurate (for example, when you're using a VPN to access the internet). To provide the most reliable speed test, the system uses the server closest to your location." =
+"Since many websites and streaming services host their content on servers located in different regions, speed test results from a single server may be inaccurate (for example, when you're using a VPN to access the internet). To provide the most reliable speed test, the system uses the server closest to your location.";
+
+"Definition:
+A ping test is primarily used to check the responsiveness and stability of a connected network.
+
+Principle:
+Because every IP address or URL is unique, your device sends a small test data packet to the target IP address or URL and requests that the destination return a packet of the same size. This process determines whether the two devices are successfully connected over the internet and measures the round-trip time—also known as latency or response time—between them.
+
+Packet Loss Rate:
+Packet loss rate refers to the percentage of data packets that fail to reach their destination during the test relative to the total number of packets sent. It is a key indicator of network quality. Packet loss is typically influenced by two main factors: the network connection itself and the router.
+
+Latency:
+Latency, also called response time, is the duration it takes for a data packet to travel from your device to the target server and back. The shorter the response time, the faster your device communicates with the tested IP address or URL. Generally, latency between 0 and 100 milliseconds (ms) is considered excellent and unlikely to cause noticeable lag or stuttering." =
+"Definition:
+A ping test is primarily used to check the responsiveness and stability of a connected network.
+
+Principle:
+Because every IP address or URL is unique, your device sends a small test data packet to the target IP address or URL and requests that the destination return a packet of the same size. This process determines whether the two devices are successfully connected over the internet and measures the round-trip time—also known as latency or response time—between them.
+
+Packet Loss Rate:
+Packet loss rate refers to the percentage of data packets that fail to reach their destination during the test relative to the total number of packets sent. It is a key indicator of network quality. Packet loss is typically influenced by two main factors: the network connection itself and the router.
+
+Latency:
+Latency, also called response time, is the duration it takes for a data packet to travel from your device to the target server and back. The shorter the response time, the faster your device communicates with the tested IP address or URL. Generally, latency between 0 and 100 milliseconds (ms) is considered excellent and unlikely to cause noticeable lag or stuttering.";
+
+/* Quick Actions */
+"dont_delete" = "Don't delete";
+"try_it_off" = "Try it off";
+
+/* Speed Test View - Additional */
+"Loading..." = "Loading...";
+"No server selected" = "No server selected";
+"Tap to select" = "Tap to select";
+"Cellular" = "Cellular";
+"Connected" = "Connected";
+"Wi-Fi" = "Wi-Fi";

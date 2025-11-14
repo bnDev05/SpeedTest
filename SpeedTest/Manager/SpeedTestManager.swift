@@ -27,7 +27,7 @@ final class SpeedTestManager: ObservableObject {
     @Published var packetLoss: Int = 0 // percentage
     @Published var isConnected: Bool = false
     @Published var connectionType: ConnectionType = .wifi
-    @Published var providerName: String = "Unknown"
+    @Published var providerName: String = "Unknown".localized
     @Published var currentServer: ServerModel?
     
     // NEW: Track current test phase
@@ -307,13 +307,13 @@ final class SpeedTestManager: ObservableObject {
         if connectionType == .cellular {
             let networkInfo = CTTelephonyNetworkInfo()
             if let carrier = networkInfo.serviceSubscriberCellularProviders?.values.first {
-                providerName = carrier.carrierName ?? "Unknown Carrier"
+                providerName = carrier.carrierName ?? "Unknown Carrier".localized
             }
         } else if connectionType == .wifi {
             if let ssid = getWiFiSSID() {
                 providerName = ssid
             } else {
-                providerName = "Wi-Fi Network"
+                providerName = "Wi-Fi Network".localized
             }
         }
     }

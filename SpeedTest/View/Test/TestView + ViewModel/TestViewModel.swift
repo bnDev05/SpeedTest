@@ -15,10 +15,10 @@ final class TestViewModel: NSObject, ObservableObject {
     @Published var isDownloadSpeed: Bool = true
     
     @Published var isWifiSource: Bool = true
-    @Published var sourceName: String = "Unknown"
+    @Published var sourceName: String = "Unknown".localized
     @Published var phoneName: String = ""
     
-    @Published var serverName: String = "Loading..."
+    @Published var serverName: String = "Loading...".localized
     @Published var serverLocationName: String = "..."
     
     @Published var isTestingStarted: Bool = false
@@ -146,7 +146,7 @@ final class TestViewModel: NSObject, ObservableObject {
         }
         
         guard let server = serverManager.selectedServer else {
-            speedState = .error(message: "No server selected. Please select a server first.")
+            speedState = .error(message: "No server selected. Please select a server first.".localized)
             return
         }
         
@@ -195,7 +195,7 @@ final class TestViewModel: NSObject, ObservableObject {
                     
                 case .error(let message):
                     self.isTestingStarted = false
-                    print("Test error: \(message)")
+                    print("Test error: \(message)".localized)
                     self.showErrorAlert = true
                 }
             }
@@ -272,8 +272,8 @@ final class TestViewModel: NSObject, ObservableObject {
     
     private func updateServerInfo(_ server: ServerModel?) {
         guard let server = server else {
-            serverName = "No server selected"
-            serverLocationName = "Tap to select"
+            serverName = "No server selected".localized
+            serverLocationName = "Tap to select".localized
             return
         }
         
@@ -292,7 +292,7 @@ final class TestViewModel: NSObject, ObservableObject {
             packetLoss: lossAmount,
             serverName: serverName,
             serverLocation: serverLocationName,
-            connectionType: isWifiSource ? "Wi-Fi" : "Cellular",
+            connectionType: isWifiSource ? "Wi-Fi".localized : "Cellular".localized,
             providerName: sourceName,
             internalIP: internalIP,
             externalIP: externalIP,

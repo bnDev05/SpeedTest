@@ -125,7 +125,7 @@ struct SpeedometerView: View {
                         
                         if showMessage {
                             if isConnected {
-                                Text("You are connected \nto the Internet")
+                                Text("You are connected \nto the Internet".localized)
                                     .font(.poppins(.medium, size: 16))
                                     .foregroundColor(Color(hex: "#4599F5"))
                                     .multilineTextAlignment(.center)
@@ -139,7 +139,7 @@ struct SpeedometerView: View {
                                     .opacity(messageOpacity)
                                     .padding(.top, -10)
                             } else {
-                                Text("Check your connection:\nthe speed test may fail")
+                                Text("Check your connection:\nthe speed test may fail".localized)
                                     .font(.poppins(.medium, size: 16))
                                     .foregroundColor(Color(hex: "#FF4D6D"))
                                     .frame(height: 45)
@@ -321,7 +321,7 @@ struct StartButtonView: View {
                         )
                         .frame(width: 140, height: 140)
                     
-                    Text("Start")
+                    Text("Start".localized)
                         .font(.poppins(.bold, size: 25))
                         .foregroundColor(.white)
                 }
@@ -374,7 +374,7 @@ struct NetworkDiagnosticsView: View {
                     .rotationEffect(.degrees(90))
                     .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
                 
-                Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready"))
+                Text((diagnosticStatus == 0) ? "Start" : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready".localized))
                     .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
                     .foregroundColor(.white)
             }
@@ -427,7 +427,7 @@ struct ConnectingButtonView: View {
                 .rotationEffect(.degrees(90))
                 .animation(.linear(duration: maxTime), value: progress)
             
-            Text("Connection...")
+            Text("Connection...".localized)
                 .font(.poppins(.bold, size: 16))
                 .foregroundColor(.white)
         }
@@ -507,7 +507,7 @@ struct ErrorButtonView: View {
                         )
                         .frame(width: 110, height: 110)
                     
-                    Text("Start")
+                    Text("Start".localized)
                         .font(.system(size: 22, weight: .bold))
                         .foregroundColor(.white)
                 }
