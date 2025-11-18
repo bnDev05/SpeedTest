@@ -16,7 +16,7 @@
 "by thousands\n" = "von Tausenden\n";
 "of users" = "von Nutzern";
 "Save " = "Speichern Sie ";
-"Your Network\n Test Results" = "Ihre Netzwerk-\n Testergebnisse";
+"Your Network\n Test Results" = "Ihre \nTestergebnisse";
 "How do you " = "Wie ";
 "connect\n" = "verbinden Sie sich\n";
 "to the internet?" = "mit dem Internet?";
@@ -30,14 +30,14 @@
 "Compare Wi-Fi, mobile, and \nmore — save every speed test" = "Vergleichen Sie WLAN, Mobilfunk und\n mehr – speichern Sie jeden Speedtest";
 "Indicate which connection you \nuse most often" = "Geben Sie an, welche Verbindung Sie\n am häufigsten nutzen";
 "Your answer helps us show the \nmost useful insights" = "Ihre Antwort hilft uns, die\n nützlichsten Erkenntnisse anzuzeigen";
-"Treat yourself to stable, fast internet—without ads—for only" = "Gönnen Sie sich stabiles, schnelles Internet – ohne Werbung – für nur";
+"Treat yourself to stable, fast internet—without ads—for only" = "Schnelles, stabiles Internet – ohne Werbung – für nur";
 "per" = "pro";
 "year" = "Jahr";
 "Continue" = "Weiter";
-"Privacy" = "Datenschutz";
-"Restore" = "Wiederherstellen";
-"Terms" = "Nutzungsbedingungen";
-"Not Now" = "Nicht jetzt";
+//"Privacy" = "Datenschutz";
+//"Restore" = "Wiederherstellen";
+//"Terms" = "Nutzungsbedingungen";
+//"Not Now" = "Nicht jetzt";
 "Restore Successful" = "Wiederherstellung erfolgreich";
 "Your previous purchases have been successfully restored." = "Ihre vorherigen Käufe wurden erfolgreich wiederhergestellt.";
 "Restore Failed" = "Wiederherstellung fehlgeschlagen";
@@ -283,3 +283,6 @@ Latenz, auch Antwortzeit genannt, ist die Dauer, die ein Datenpaket benötigt, u
 "First 3 days free," = "Die ersten 3 Tage kostenlos,";
 "then %@ per Year." = "danach %@ pro Jahr.";
 "Cancel at anytime" = "Jederzeit kündbar";
+
+"No Speed Test History Yet" = "Noch keine Geschwindigkeitstest-Historie";
+"Run your first speed test to start \ntracking" = "Führen Sie Ihren ersten Geschwindigkeitstest durch, um mit dem \nTracking zu beginnen";

@@ -34,10 +34,10 @@
 "per" = "por";
 "year" = "año";
 "Continue" = "Continuar";
-"Privacy" = "Privacidad";
-"Restore" = "Restaurar";
-"Terms" = "Términos";
-"Not Now" = "Ahora no";
+//"Privacy" = "Privacidad";
+//"Restore" = "Restaurar";
+//"Terms" = "Términos";
+//"Not Now" = "Ahora no";
 "Restore Successful" = "Restauración exitosa";
 "Your previous purchases have been successfully restored." = "Tus compras anteriores se han restaurado correctamente.";
 "Restore Failed" = "Restauración fallida";
@@ -283,3 +283,6 @@ La latencia, también llamada tiempo de respuesta, es la duración que tarda un 
 "First 3 days free," = "Primeros 3 días gratis,";
 "then %@ per Year." = "después %@ al año.";
 "Cancel at anytime" = "Cancela en cualquier momento";
+
+"No Speed Test History Yet" = "Aún no tienes historial de pruebas de velocidad";
+"Run your first speed test to start \ntracking" = "Realiza tu primera prueba de velocidad para comenzar el \nseguimiento";

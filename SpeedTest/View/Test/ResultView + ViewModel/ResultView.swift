@@ -12,7 +12,8 @@ struct ResultView: View {
     @State var action: (() -> Void)?
     @StateObject private var subscriptionManager = SubscriptionManager.shared
     @AppStorage("firstSpeedTest") private var firstSpeedTest: Bool = true
-    
+    @AppStorage("firstRateAppear") private var firstRateAppear: Bool = true
+
     var body: some View {
         ZStack {
             BackView()
@@ -37,10 +38,10 @@ struct ResultView: View {
                 .background(
                     Rectangle()
                         .ignoresSafeArea()
-                        .foregroundStyle(LinearGradient(colors: [.clear, Color(hex: "#040A15")], startPoint: .top, endPoint: .bottom))
+                        .foregroundStyle(LinearGradient(colors: [.clear, .black, .black], startPoint: .top, endPoint: .bottom))
                 )
-            if showRateApp {
-                RateAppView(isRateApp: $showRateApp)
+            if firstRateAppear {
+                RateAppView(isRateApp: $firstRateAppear)
             }
         })
         .navigationBarBackButtonHidden()
@@ -48,7 +49,8 @@ struct ResultView: View {
             watchVideosRating = testResults.watchVideosRating
             playGamesRating = testResults.playGamesRating
             uploadPhotosRating = testResults.uploadPhotosRating
-            showRateApp = true
+            showRateApp = firstRateAppear
+            firstSpeedTest = false
             byAverageValue = TestResultEntity.averageBandwidth()
             print("📊 Download history count: \(testResults.downloadHistory.count)")
             print("📊 Upload history count: \(testResults.uploadHistory.count)")
@@ -237,6 +239,7 @@ struct ResultView: View {
                 }
                 .frame(height: 62)
                 .padding(.horizontal)
+                .padding(.bottom, 10)
             }
             .buttonStyle(HapticButtonStyle())
 

@@ -19,7 +19,7 @@ struct RateAppView: View {
     private var back: some View {
         Color(hex: "#050503").opacity(0.2)
             .background(.ultraThinMaterial)
-            .blur(radius: 22.2)
+//            .blur(radius: 32.2)
             .ignoresSafeArea()
             .onTapGesture {
                 isRateApp = false
@@ -51,7 +51,7 @@ struct RateAppView: View {
                     LinearGradient.appBlueGradient
                         .clipShape(Capsule())
                         .frame(height: 70)
-                        .shadow(color: Color(hex: "#245BEB78").opacity(0.47), radius: 10, x: 5, y: 10)
+                        .shadow(color: Color(hex: "#245BEB").opacity(0.47), radius: 10, x: 5, y: 10)
                     Text("Write a review".localized)
                         .font(.onest(.semibold, size: 18))
                         .foregroundStyle(.white)

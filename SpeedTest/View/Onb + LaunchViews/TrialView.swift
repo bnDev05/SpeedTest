@@ -14,7 +14,7 @@ struct TrialView: View {
         ZStack {
             BackView()
             VStack(spacing: 0) {
-                Image(.trialTop)
+                Image((UIScreen.main.bounds.height <= 667) ? .freeTrialForSE : .trialTop)
                     .resizable()
                     .scaledToFit()
                     .overlay(alignment: .topTrailing) {
@@ -31,15 +31,18 @@ struct TrialView: View {
 
                     }
                 
-                Text("Start your ".localized)
+                (
+                    Text("Start your ".localized)
                     .foregroundColor(.white)
                     .font(.poppins(.bold, size: 25))
-                +
-                Text("3-day free!".localized)
-                    .foregroundColor(Color(hex: "#4599F5"))
-                    .font(.poppins(.bold, size: 25))
-                
-                HStack {
+                    +
+                    Text("3-day free!".localized)
+                        .foregroundColor(Color(hex: "#4599F5"))
+                        .font(.poppins(.bold, size: 25))
+                )
+                .multilineTextAlignment(.center)
+
+                HStack(alignment: .top) {
                     Image(.trialLeft)
                     
                     VStack {
@@ -51,6 +54,7 @@ struct TrialView: View {
                         Text("Get access to all premium \nfeatures for free".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 8)
                         Text("Day 2: Trial reminder".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
@@ -60,6 +64,8 @@ struct TrialView: View {
                         Text("We'll send you an email that your \ntrial is ending".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 8)
+
                         Text("Day 3: Full Subscription".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
@@ -68,9 +74,12 @@ struct TrialView: View {
                         Text("You will be charged today, \ncancel anytime".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.bottom, 8)
+
                     }
                 }
-                .frame(maxHeight: .infinity, alignment: .center)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .padding(.top, UIScreen.main.bounds.height / 35)
                 .padding(.horizontal)
                 
                 Text("First 3 days free,".localized)
@@ -105,13 +114,12 @@ struct TrialView: View {
                             .frame(width: UIScreen.main.bounds.width - 36)
                             .foregroundStyle(LinearGradient.appBlueGradient)
                             .shadow(color: Color(hex: "#245BEB").opacity(0.47), radius: 10, x: 0, y: 4)
-//                            .shadow(color: (UIScreen.main.bounds.height <= 667) ? .white.opacity(0.6) : .clear, radius: 8, x: 0, y: 4)
                         
                         Text("Continue".localized)
                             .foregroundStyle(.white)
                             .font(.poppins(.bold, size: 18))
                     }
-                    .padding(.bottom, 10)
+                    .padding(.bottom, UIScreen.main.bounds.height / 30)
                     .padding(.top, 10)
                 }
                 .buttonStyle(HapticButtonStyle())
@@ -122,11 +130,11 @@ struct TrialView: View {
     }
     
     private var bottomButtons: some View {
-        HStack(spacing: 35) {
+        HStack(spacing: 55) {
             Button {
                 openURL(Config.privacy.rawValue)
             } label: {
-                Text("Privacy".localized)
+                Text("Privacy")
             }
             .buttonStyle(HapticButtonStyle())
 
@@ -135,24 +143,17 @@ struct TrialView: View {
                     await restorePurchases()
                 }
             } label: {
-                Text("Restore".localized)
+                Text("Restore")
             }
             .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
-                Text("Terms".localized)
+                Text("Terms")
             }
             .buttonStyle(HapticButtonStyle())
 
-            Button {
-                dismiss()
-                onDismiss()
-            } label: {
-                Text("Not Now".localized)
-            }
-            .buttonStyle(HapticButtonStyle())
         }
         .lineLimit(1)
         .foregroundStyle(Color(hex: "#787F88"))

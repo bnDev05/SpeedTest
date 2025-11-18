@@ -63,6 +63,7 @@ struct TestView: View {
         Text("Speed Test".localized)
             .font(.poppins(.semibold, size: 24))
             .foregroundStyle(.white)
+            .padding(.top)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
@@ -75,24 +76,25 @@ struct TestView: View {
     }
     
     @ViewBuilder private func topInfoCell(icon: ImageResource, title: String, amount: Int, isPercentage: Bool = false) -> some View {
-        VStack(alignment: .trailing) {
-            HStack {
-                Image(icon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 20, height: 20, alignment: .center)
+        HStack(alignment: .top) {
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20, alignment: .center)
+            
+            VStack(alignment: .leading) {
                 Text(title.localized)
                     .font(.poppins(.medium, size: 16))
                     .foregroundStyle(Color(hex: "#787F88"))
-            }
-            
-            HStack(spacing: 3) {
-                Text("\(amount)")
-                    .font(.poppins(.semibold, size: 16))
-                    .foregroundColor(.white)
-                Text(isPercentage ? "%" : viewModel.selectedUnit)
-                    .font(.poppins(.medium, size: 16))
-                    .foregroundStyle(Color(hex: "#787F88"))
+                
+                HStack(spacing: 3) {
+                    Text("\(amount)")
+                        .font(.poppins(.semibold, size: 16))
+                        .foregroundColor(.white)
+                    Text(isPercentage ? "%" : viewModel.selectedUnit)
+                        .font(.poppins(.medium, size: 16))
+                        .foregroundStyle(Color(hex: "#787F88"))
+                }
             }
         }
     }
@@ -145,6 +147,7 @@ struct TestView: View {
             UploadDownloadView(isDownload: true, speed: $viewModel.downloadSpeed)
             UploadDownloadView(isDownload: false, isGreen: true, speed: $viewModel.uploadSpeed)
         }
+        .padding(.bottom, 15)
     }
 }
 

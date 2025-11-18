@@ -13,7 +13,7 @@ struct ContentView: View {
             Image(.appIcon0)
                 .resizable()
                 .scaledToFit()
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .clipShape(RoundedRectangle(cornerRadius: 32))
                 .frame(width: 175, height: 175)
         }
         .onAppear {

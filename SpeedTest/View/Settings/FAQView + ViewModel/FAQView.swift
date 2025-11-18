@@ -14,6 +14,7 @@ struct FAQView: View {
                                 .padding(.horizontal, 18)
                         }
                     }
+                    .padding(.top)
                 }
             }
         }

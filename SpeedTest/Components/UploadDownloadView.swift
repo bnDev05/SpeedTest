@@ -19,7 +19,7 @@ struct UploadDownloadView: View {
     /// Dynamic live history for real-time updates
     @State private var liveHistory: [SpeedDataPoint] = []
 
-    @State private var maxDataPoints = 20
+    @State private var maxDataPoints = 10
 
     // Unit settings
     @AppStorage("unit") private var unit: Int = 0

@@ -34,10 +34,10 @@
 "per" = "por";
 "year" = "ano";
 "Continue" = "Continuar";
-"Privacy" = "Privacidade";
-"Restore" = "Restaurar";
-"Terms" = "Termos";
-"Not Now" = "Agora não";
+//"Privacy" = "Privacidade";
+//"Restore" = "Restaurar";
+//"Terms" = "Termos";
+//"Not Now" = "Agora não";
 "Restore Successful" = "Restauração bem-sucedida";
 "Your previous purchases have been successfully restored." = "Suas compras anteriores foram restauradas com sucesso.";
 "Restore Failed" = "Restauração falhou";
@@ -283,3 +283,6 @@ A latência, também chamada de tempo de resposta, é a duração que um pacote 
 "First 3 days free," = "Primeiros 3 dias grátis,";
 "then %@ per Year." = "depois %@ por ano.";
 "Cancel at anytime" = "Cancele a qualquer momento";
+
+"No Speed Test History Yet" = "Aún no hay historial de pruebas de velocidad";
+"Run your first speed test to start \ntracking" = "Realiza tu primera prueba de velocidad para empezar el \nseguimiento";

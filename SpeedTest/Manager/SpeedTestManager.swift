@@ -78,11 +78,51 @@ final class SpeedTestManager: ObservableObject {
         await performUploadTest(server: server, progress: progress)
         
         // Complete
+        // Smoothly animate the final speed -> 0 over 0.5s before completing
+        await animateFinalSpeedToZero()
+
         await MainActor.run {
             currentTestPhase = .complete
-            progress(.complete(speed: max(downloadSpeed, uploadSpeed)), .complete)
+            progress(.complete(speed: 0), .complete)
         }
     }
+    
+    private func animateFinalSpeedToZero() async {
+        let duration: TimeInterval = 0.5
+        let steps = 4
+        let interval = duration / Double(steps)
+        
+        // Determine which speed was last active
+        let startingSpeed = await MainActor.run {
+            currentTestPhase == .upload ? uploadSpeed : downloadSpeed
+        }
+
+        guard startingSpeed > 0 else { return }
+
+        for i in 1...steps {
+            try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
+
+            let newSpeed = max(0, startingSpeed * (1 - Double(i) / Double(steps)))
+
+            await MainActor.run {
+                if currentTestPhase == .upload {
+                    uploadSpeed = newSpeed
+                } else {
+                    downloadSpeed = newSpeed
+                }
+            }
+        }
+
+        // ensure exact zero
+        await MainActor.run {
+            if currentTestPhase == .upload {
+                uploadSpeed = 0
+            } else {
+                downloadSpeed = 0
+            }
+        }
+    }
+
     
     // MARK: - Ping Test (Updated)
     private func performPingTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {

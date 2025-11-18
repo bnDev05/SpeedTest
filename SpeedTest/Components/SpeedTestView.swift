@@ -336,6 +336,11 @@ struct NetworkDiagnosticsView: View {
     @Binding var progressPercentage: Int
     @Binding var diagnosticStatus: Int
     
+    private var scaleFactor: CGFloat {
+        let width = UIScreen.main.bounds.width
+        return width <= 375 ? 0.75 : 1.0   // iPhone SE → 25% smaller
+    }
+    
     var body: some View {
         Button {
             if diagnosticStatus == 0 {
@@ -355,27 +360,32 @@ struct NetworkDiagnosticsView: View {
                         x: 0,
                         y: 0
                     )
-                    .frame(width: 180, height: 180)
+                    .frame(width: 180 * scaleFactor, height: 180 * scaleFactor)
                 
                 Circle()
                     .stroke(
-                        Color(hex: "#292F38"),
-                        lineWidth: 13
+                        diagnosticStatus == 0
+                        ? LinearGradient(colors: [Color(hex: "#00D37F")], startPoint: .top, endPoint: .bottom)
+                        : LinearGradient(
+                            colors: [Color(hex: "#171F2C"), Color(hex: "#0F1826")],
+                            startPoint: .top,
+                            endPoint: .bottom),
+                        lineWidth: 13 * scaleFactor
                     )
-                    .frame(width: 167, height: 167)
+                    .frame(width: 167 * scaleFactor, height: 167 * scaleFactor)
                 
                 Circle()
                     .trim(from: 0, to: CGFloat(progressPercentage) / 100.0)
                     .stroke(
                         Color(hex: "#00D37F"),
-                        style: StrokeStyle(lineWidth: 13, lineCap: .round)
+                        style: StrokeStyle(lineWidth: 13 * scaleFactor, lineCap: .round)
                     )
-                    .frame(width: 167, height: 167)
+                    .frame(width: 167 * scaleFactor, height: 167 * scaleFactor)
                     .rotationEffect(.degrees(90))
                     .animation(.linear, value: CGFloat(progressPercentage) / 100.0)
                 
                 Text((diagnosticStatus == 0) ? "Start".localized : ((diagnosticStatus == 1) ? "\(progressPercentage)%" : "Ready".localized))
-                    .font(.poppins(.bold, size: (diagnosticStatus == 1) ? 50 : 34))
+                    .font(.poppins(.bold, size: (diagnosticStatus == 1 ? 50 : 34) * scaleFactor))
                     .foregroundColor(.white)
             }
         }

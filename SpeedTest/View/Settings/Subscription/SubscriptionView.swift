@@ -18,11 +18,7 @@ struct SubscriptionView: View {
                     loadingView
                 } else if let allPaywall = viewModel.allPaywall, !allPaywall.products.isEmpty {
                     centerContentAllPlacement(paywall: allPaywall)
-                    tryForFreeButton
-                        .padding(.horizontal)
 
-                    bottomButtons
-                        .padding(.horizontal)
 
                 } else if let paywall = viewModel.paywall, !paywall.products.isEmpty {
                     centerContent(paywall: paywall)
@@ -41,6 +37,37 @@ struct SubscriptionView: View {
 
             }
         }
+        .overlay(alignment: .bottom, content: {
+            if let paywall = viewModel.paywall, !paywall.products.isEmpty {
+                VStack {
+                    tryForFreeButton
+                        .padding(.horizontal)
+                    
+                    bottomButtons
+                        .padding(.horizontal)
+                }
+                .padding(.top, 30)
+                .background(
+                    Rectangle()
+                        .ignoresSafeArea()
+                        .foregroundStyle(LinearGradient(colors: [.clear, .black, .black], startPoint: .top, endPoint: .bottom))
+                )
+            } else if let allPaywall = viewModel.allPaywall, !allPaywall.products.isEmpty {
+                VStack {
+                    tryForFreeButton
+                        .padding(.horizontal)
+                    
+                    bottomButtons
+                        .padding(.horizontal)
+                }
+                .padding(.top, 30)
+                .background(
+                    Rectangle()
+                        .ignoresSafeArea()
+                        .foregroundStyle(LinearGradient(colors: [.clear, .black, .black], startPoint: .top, endPoint: .bottom))
+                )
+            }
+        })
         .navigationBarBackButtonHidden()
         .onAppear {
             Task {
@@ -271,7 +298,7 @@ struct SubscriptionView: View {
     
     @ViewBuilder
     func featuresCell(title: String, isDividerAdd: Bool = true, icon: ImageResource) -> some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 15) {
             Image(icon)
                 .resizable()
                 .scaledToFit()
@@ -345,7 +372,7 @@ struct SubscriptionView: View {
             Button {
                 openURL(Config.privacy.rawValue)
             } label: {
-                Text("Privacy".localized)
+                Text("Privacy")
             }
             .buttonStyle(HapticButtonStyle())
 
@@ -354,14 +381,14 @@ struct SubscriptionView: View {
                     await viewModel.restorePurchases()
                 }
             } label: {
-                Text("Restore".localized)
+                Text("Restore")
             }
             .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
-                Text("Terms".localized)
+                Text("Terms")
             }
             .buttonStyle(HapticButtonStyle())
         }

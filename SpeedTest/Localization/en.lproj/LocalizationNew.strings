@@ -30,14 +30,14 @@
 "Compare Wi-Fi, mobile, and \nmore — save every speed test" = "Compare Wi-Fi, mobile, and \nmore — save every speed test";
 "Indicate which connection you \nuse most often" = "Indicate which connection you \nuse most often";
 "Your answer helps us show the \nmost useful insights" = "Your answer helps us show the \nmost useful insights";
-"Treat yourself to stable, fast internet—without ads—for only" = "Treat yourself to stable, fast internet—without ads—for only";
+"Treat yourself to stable, fast internet—without ads—for only" = "Treat yourself to stable, fast internet\n—without ads—for only";
 "per" = "per";
 "year" = "year";
 "Continue" = "Continue";
-"Privacy" = "Privacy";
-"Restore" = "Restore";
-"Terms" = "Terms";
-"Not Now" = "Not Now";
+//"Privacy" = "Privacy";
+//"Restore" = "Restore";
+//"Terms" = "Terms";
+//"Not Now" = "Not Now";
 "Restore Successful" = "Restore Successful";
 "Your previous purchases have been successfully restored." = "Your previous purchases have been successfully restored.";
 "Restore Failed" = "Restore Failed";
@@ -281,3 +281,6 @@ Latency, also called response time, is the duration it takes for a data packet t
 "First 3 days free," = "First 3 days free,";
 "then %@ per Year." = "then %@ per Year.";
 "Cancel at anytime" = "Cancel at anytime";
+
+"No Speed Test History Yet" = "No Speed Test History Yet";
+"Run your first speed test to start \ntracking" = "Run your first speed test to start \ntracking";

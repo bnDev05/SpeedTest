@@ -88,7 +88,7 @@ struct SignalView: View {
                     RoundedRectangle(cornerRadius: 22)
                         .foregroundStyle(Color(hex: "#292F38"))
                 )
-                .padding(.bottom)
+                .padding(.bottom, 30)
             }
             .padding(.horizontal)
         }

@@ -95,12 +95,14 @@ struct TabButton: View {
                 Group {
                     if isSelected {
                         LinearGradient.appBlueGradient
+                            .clipShape(Capsule())
                     } else {
                         Color.clear
+                            .clipShape(Rectangle())
                     }
                 }
             )
-            .clipShape(Capsule())
+//            .clipShape(isSelected ? Capsule() : Rectangle())
         }
         .buttonStyle(HapticButtonStyle())
     }

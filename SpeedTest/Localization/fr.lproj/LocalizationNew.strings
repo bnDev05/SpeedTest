@@ -26,10 +26,10 @@
 "per" = "par";
 "year" = "an";
 "Continue" = "Continuer";
-"Privacy" = "Confidentialité";
-"Restore" = "Restaurer";
-"Terms" = "Conditions";
-"Not Now" = "Pas maintenant";
+//"Privacy" = "Confidentialité";
+//"Restore" = "Restaurer";
+//"Terms" = "Conditions";
+//"Not Now" = "Pas maintenant";
 "Restore Successful" = "Restauration réussie";
 "Your previous purchases have been successfully restored." = "Vos achats précédents ont été restaurés avec succès.";
 "Restore Failed" = "Échec de la restauration";
@@ -286,3 +286,6 @@ La latence, ou temps de réponse, est la durée nécessaire pour qu’un paquet 
 "First 3 days free," = "3 premiers jours gratuits,";
 "then %@ per Year." = "puis %@ par an.";
 "Cancel at anytime" = "Annulez à tout moment";
+
+"No Speed Test History Yet" = "Aucun historique de tests de vitesse pour le moment";
+"Run your first speed test to start \ntracking" = "Effectuez votre premier test de vitesse pour commencer le \nsuivi";

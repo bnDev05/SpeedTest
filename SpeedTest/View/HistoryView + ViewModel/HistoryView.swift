@@ -25,10 +25,7 @@ struct HistoryView: View {
                         .padding(.bottom, 20)
                     }
                 } else {
-                    Text("History is empty.".localized)
-                        .foregroundStyle(.white)
-                        .font(.poppins(.semibold, size: 25))
-                        .frame(maxHeight: .infinity, alignment: .center)
+                    emptyHistory
                 }
             }
             .padding(.horizontal)
@@ -42,15 +39,16 @@ struct HistoryView: View {
                 .foregroundStyle(.white)
                 .font(.poppins(.semibold, size: 24))
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Button {
-                viewModel.isInEdit.toggle()
-            } label: {
-                Text("Edit".localized)
-                    .foregroundStyle(Color(hex: "#787F88"))
-                    .font(.onest(.semibold, size: 18))
+            if !viewModel.historyItems.isEmpty {
+                Button {
+                    viewModel.isInEdit.toggle()
+                } label: {
+                    Text("Edit".localized)
+                        .foregroundStyle(Color(hex: "#787F88"))
+                        .font(.onest(.semibold, size: 18))
+                }
+                .buttonStyle(HapticButtonStyle())
             }
-            .buttonStyle(HapticButtonStyle())
-
         }
     }
     
@@ -153,6 +151,27 @@ struct HistoryView: View {
         formatter.dateFormat = "dd.MM.yyyy · HH:mm"
         formatter.locale = Locale.current
         return formatter.string(from: date)
+    }
+    
+    private var emptyHistory: some View {
+        VStack(spacing: 19) {
+            Image(.emptyHistoryIcon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 76, height: 76, alignment: .center)
+            
+            Text("No Speed Test History Yet".localized)
+                .foregroundStyle(.white)
+                .font(.poppins(.semibold, size: 18))
+            
+            Text("Run your first speed test to start \ntracking".localized)
+                .foregroundStyle(Color(hex: "#787F88"))
+                .font(.poppins(.medium, size: 16))
+                .padding(.top, -10)
+                .multilineTextAlignment(.center)
+
+        }
+        .frame(maxHeight: .infinity, alignment: .center)
     }
 }
 

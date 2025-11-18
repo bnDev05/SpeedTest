@@ -74,12 +74,11 @@ struct OnboardingView: View {
                     centerContent
                         .frame(maxHeight: .infinity)
                 }
-                .padding(.top, UIScreen.main.bounds.height / 23)
+                .padding(.top, UIScreen.main.bounds.height / 21)
                 
-                Spacer(minLength: 10)
+                Spacer(minLength: 0)
                 bottomButtons
                     .padding(.horizontal)
-                    .padding(.bottom)
             }
         }
         .navigationBarBackButtonHidden()
@@ -200,7 +199,7 @@ struct OnboardingView: View {
                         .foregroundStyle(.white.opacity(viewModel.showActive(step: step) ? 1 : 0.5))
                         .font(.poppins(.bold, size: 18))
                 }
-                .padding(.bottom, (step == 4 || step == 5 ) ? 25 : 10)
+                .padding(.bottom, (step == 4 || step == 5 ) ? 25 : 0)
                 .padding(.top, -10)
             }
             .buttonStyle(HapticButtonStyle())
@@ -214,7 +213,7 @@ struct OnboardingView: View {
             Button {
                 openURL(Config.privacy.rawValue)
             } label: {
-                Text("Privacy".localized)
+                Text("Privacy")
             }
             .buttonStyle(HapticButtonStyle())
 
@@ -223,14 +222,14 @@ struct OnboardingView: View {
                     await restorePurchases()
                 }
             } label: {
-                Text("Restore".localized)
+                Text("Restore")
             }
             .buttonStyle(HapticButtonStyle())
 
             Button {
                 openURL(Config.terms.rawValue)
             } label: {
-                Text("Terms".localized)
+                Text("Terms")
             }
             .buttonStyle(HapticButtonStyle())
 
@@ -292,7 +291,7 @@ struct OnboardingView: View {
     }
     
     @ViewBuilder private func setupSelectionView(isInitial: Bool) -> some View {
-        VStack {
+        VStack(spacing: 12) {
             ForEach(0..<4) { i in
                 Button {
                     if isInitial {
@@ -312,6 +311,7 @@ struct OnboardingView: View {
                         Text(isInitial ? viewModel.connectionTypeTexts[i].localized : viewModel.testFrequencyTexts[i].localized)
                             .font(.poppins(.semibold, size: 18))
                             .foregroundStyle(.white)
+                            .lineLimit(1)
                         
                         Spacer()
                         

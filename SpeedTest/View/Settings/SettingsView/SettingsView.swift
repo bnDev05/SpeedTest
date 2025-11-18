@@ -132,12 +132,13 @@ struct SettingsView: View {
                     VStack(spacing: 10) {
                         VStack(spacing: 6) {
                             Text("Get Unlimited access".localized)
-                                .font(.poppins(.bold, size: 22))
+                                .font(.poppins(.bold, size: 24))
                                 .foregroundStyle(.white)
                             Text("to all application features".localized)
-                                .font(.poppins(.medium, size: 17))
+                                .font(.poppins(.medium, size: 18))
                                 .foregroundStyle(.white)
                         }
+                        .padding(.top, 5)
                         Spacer()
                         Text("Start Now".localized)
                             .font(.poppins(.semibold, size: 18))
@@ -149,6 +150,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.white)
                                     .shadow(color: Color(hex: "#00080B").opacity(0.2), radius: 9, x: 0, y: 8)
                             )
+                            .padding(.bottom, 5)
                     }
                     .padding()
                 }

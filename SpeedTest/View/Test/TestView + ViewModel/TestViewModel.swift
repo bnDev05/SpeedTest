@@ -189,6 +189,7 @@ final class TestViewModel: NSObject, ObservableObject {
                     
                 case .complete(let finalSpeed):
                     self.speed = finalSpeed
+                    
                     self.isTestingStarted = false
                     self.createTestResults()
                     self.navigateToResults()
@@ -201,6 +202,7 @@ final class TestViewModel: NSObject, ObservableObject {
             }
         }
     }
+    
     
     // Keep all other existing methods...
     private func setupLocationManager() {
