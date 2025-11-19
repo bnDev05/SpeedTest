@@ -228,7 +228,7 @@ struct SpeedometerView: View {
                                 .foregroundColor(Color(hex: "#787F88"))
                         }
                     }
-                    .position(x: center.x, y: center.y + radius * 0.9)
+                    .position(x: center.x, y: center.y + radius * 0.8)
                 }
             }
         }

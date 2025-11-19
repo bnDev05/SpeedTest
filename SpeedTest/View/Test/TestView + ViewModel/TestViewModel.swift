@@ -116,11 +116,21 @@ final class TestViewModel: NSObject, ObservableObject {
         speedTestManager.$uploadSpeed
             .sink { [weak self] newSpeed in
                 guard let self = self else { return }
+                
+                // Ignore the artificial "reset to zero" after the test finishes
+                if self.speedTestManager.finalUploadSpeed > 0 && newSpeed == 0 {
+                    return
+                }
+                
                 self.uploadSpeed = newSpeed
                 
+                // Only log REAL upload speeds
                 if self.isTestingStarted && newSpeed > 0 {
                     let newIndex = self.uploadSpeedHistory.isEmpty ? 0 : (self.uploadSpeedHistory.last?.index ?? 0) + 1
-                    self.uploadSpeedHistory.append(SpeedDataPoint(index: newIndex, speed: newSpeed))
+                    
+                    self.uploadSpeedHistory.append(
+                        SpeedDataPoint(index: newIndex, speed: newSpeed)
+                    )
                     
                     if self.uploadSpeedHistory.count > 50 {
                         self.uploadSpeedHistory.removeFirst()
@@ -131,6 +141,7 @@ final class TestViewModel: NSObject, ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
         
         serverManager.$selectedServer
             .sink { [weak self] server in

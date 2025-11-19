@@ -41,6 +41,7 @@ struct TrialView: View {
                         .font(.poppins(.bold, size: 25))
                 )
                 .multilineTextAlignment(.center)
+                .padding(.horizontal, 30)
 
                 HStack(alignment: .top) {
                     Image(.trialLeft)
@@ -53,6 +54,7 @@ struct TrialView: View {
                             .lineLimit(1)
                         Text("Get access to all premium \nfeatures for free".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
+                            .font(.poppins(.medium, size: 14))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
                         Text("Day 2: Trial reminder".localized)
@@ -63,6 +65,7 @@ struct TrialView: View {
 
                         Text("We'll send you an email that your \ntrial is ending".localized)
                             .foregroundStyle(Color(hex: "#787F88"))
+                            .font(.poppins(.medium, size: 14))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
 
@@ -72,6 +75,7 @@ struct TrialView: View {
                             .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text("You will be charged today, \ncancel anytime".localized)
+                            .font(.poppins(.medium, size: 14))
                             .foregroundStyle(Color(hex: "#787F88"))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 8)
@@ -89,7 +93,7 @@ struct TrialView: View {
                 Text("\(String(format: "then %@ per Year.".localized, price)) \( "Cancel at anytime".localized )")
                     .foregroundStyle(Color(hex: "#787F88"))
                     .font(.poppins(.medium, size: 14))
-
+                    .padding(.bottom, (UIScreen.main.bounds.height <= 667) ? 0 : 20)
                 
                 Button {
                     Task {

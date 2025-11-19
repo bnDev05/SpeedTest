@@ -32,6 +32,7 @@ struct TabView: View {
                     .glassEffect()
                     .clipShape(Capsule())
                     .padding(.horizontal, 15)
+                    .padding(.bottom, 10)
                 } else {
                     HStack(spacing: 0) {
                         ForEach(Tabs.allCases) { tab in
@@ -53,6 +54,7 @@ struct TabView: View {
                     }))
                     .clipShape(Capsule())
                     .padding(.horizontal, 15)
+                    .padding(.bottom, 10)
                 }
             }
         }

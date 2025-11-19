@@ -29,7 +29,8 @@ final class SpeedTestManager: ObservableObject {
     @Published var connectionType: ConnectionType = .wifi
     @Published var providerName: String = "Unknown".localized
     @Published var currentServer: ServerModel?
-    
+    @Published var finalUploadSpeed: Double = 0
+
     // NEW: Track current test phase
     @Published var currentTestPhase: TestPhase = .idle
     
@@ -91,8 +92,7 @@ final class SpeedTestManager: ObservableObject {
         let duration: TimeInterval = 0.5
         let steps = 4
         let interval = duration / Double(steps)
-        
-        // Determine which speed was last active
+
         let startingSpeed = await MainActor.run {
             currentTestPhase == .upload ? uploadSpeed : downloadSpeed
         }
@@ -113,17 +113,13 @@ final class SpeedTestManager: ObservableObject {
             }
         }
 
-        // ensure exact zero
         await MainActor.run {
             if currentTestPhase == .upload {
                 uploadSpeed = 0
-            } else {
-                downloadSpeed = 0
             }
         }
     }
 
-    
     // MARK: - Ping Test (Updated)
     private func performPingTest(server: ServerModel, progress: @escaping (SpeedTestState, TestPhase) -> Void) async {
         let pingCount = 10
@@ -262,7 +258,6 @@ final class SpeedTestManager: ObservableObject {
         let testDuration: TimeInterval = 10
         let startTime = Date()
         var totalBytesUploaded: Int64 = 0
-        
         let chunkSize = 1024 * 1024
         
         while Date().timeIntervalSince(startTime) < testDuration {
@@ -282,6 +277,15 @@ final class SpeedTestManager: ObservableObject {
                 }
             } else {
                 break
+            }
+        }
+        
+        // 👇 store REAL final speed once (not every loop)
+        let elapsed = Date().timeIntervalSince(startTime)
+        if elapsed > 0 {
+            let finalMbps = (Double(totalBytesUploaded) * 8) / (elapsed * 1_000_000)
+            await MainActor.run {
+                self.finalUploadSpeed = finalMbps
             }
         }
     }

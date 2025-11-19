@@ -121,6 +121,7 @@ struct ResultView: View {
             Spacer()
             Text(measure)
         }
+        .lineLimit(1)
         .padding(18)
         .font(.onest(.semibold, size: 18))
         .foregroundStyle(.white)

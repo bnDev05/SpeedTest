@@ -110,7 +110,7 @@ struct UploadDownloadView: View {
                 .chartYScale(domain: 0 ... (historyForChart.map { $0.speed }.max() ?? 100) * 1.1)
                 .frame(height: 41)
                 .padding(.bottom, 8)
-
+                .padding(.trailing, -20)
             } else {
                 Rectangle()
                     .fill(Color.clear)
