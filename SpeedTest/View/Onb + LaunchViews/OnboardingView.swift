@@ -200,7 +200,7 @@ struct OnboardingView: View {
                         .font(.poppins(.bold, size: 18))
                 }
                 .padding(.bottom, (step == 4 || step == 5 ) ? 25 : 0)
-                .padding(.top, -10)
+                .padding(.top, -20)
             }
             .buttonStyle(HapticButtonStyle())
 

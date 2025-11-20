@@ -89,6 +89,7 @@ struct TrialView: View {
                 Text("First 3 days free,".localized)
                     .foregroundStyle(.white)
                     .font(.poppins(.bold, size: 18))
+                    .padding(.bottom, 10)
 
                 Text("\(String(format: "then %@ per Year.".localized, price)) \( "Cancel at anytime".localized )")
                     .foregroundStyle(Color(hex: "#787F88"))
